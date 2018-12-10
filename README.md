@@ -3,9 +3,7 @@ SWGI application to browse text files and display them via jinja2 templates
 
 # Setup
 
-rpm dependencies :
-
-On root on server
+As root on your server
 
 ~~~~
 useradd liftree
@@ -15,6 +13,9 @@ exit
 ansible-playbook /home/liftree/liftree/setup/setup.yml
 ~~~~
 
-go on `http://{your_ip}/info`
-go on `http://{your_ip}/search`
-go on `http://{your_ip}/show?path=/home/liftree/liftree/example/data/test.md`
+Test url:
+
+* http://{your_ip}/info
+* http://{your_ip}/search
+* http://{your_ip}/show
+* http://{your_ip}/show?path=/home/liftree/liftree/example/data/test.md
