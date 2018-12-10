@@ -1,0 +1,45 @@
+---
+
+- hosts: localhost
+  tasks:
+
+    - dnf:
+        name:
+          - httpd
+          - python3-mod_wsgi
+          - python3-jinja2
+          - python3-json-logger
+        state: latest
+
+    - file:
+        path: /etc/liftree/conf.d/
+        state: directory
+
+    - copy:
+        src: logging.conf
+        dest: /etc/liftree/logging.conf
+
+    - copy:
+        src: liftree.conf
+        dest: /etc/liftree/liftree.conf
+
+    - copy:
+        dest: /etc/liftree/conf.d/example.conf
+        content: |
+          ---
+          name: /home/liftree/liftree/example
+          ...
+
+    - file:
+        path: /home/liftree/liftree/wsgi/
+        recurse: true
+        state: directory
+        mode: 0755
+
+    - copy:
+        src: httpd.conf
+        dest: /etc/httpd/conf.d/liftree.conf
+
+    - systemd:
+        name: httpd
+        state: restarted
