@@ -107,6 +107,8 @@ class LifTreeConfig(LifTreeObject):
         self.mappings = mappings + self.mappings
         templates = os.path.join(config_folder, 'templates')
         self.templates.insert(0, templates)
+        default = config.get('defaults', dict())
+        self.defaults.update(default)
 
 class LifTree:
 
@@ -220,7 +222,7 @@ class LifTree:
         if 'path' in parameters:
             path = parameters['path'][0]
         else:
-            path = self.defaults['path']
+            path = self.liftree_config.defaults['path']
         self.logger.debug(path)
         return path
 
