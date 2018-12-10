@@ -3,6 +3,11 @@ SWGI application to browse text files and display them via jinja2 templates
 
 # Setup
 
+## Prerequisite
+
+fedora 29
+
+## Procedure
 As root on your server
 
 ~~~~
@@ -13,6 +18,7 @@ exit
 ansible-playbook /home/liftree/liftree/setup/setup.yml
 ~~~~
 
+## Test
 Test url:
 
 * http://{your_ip}/info
