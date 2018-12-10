@@ -184,22 +184,27 @@ class LifTree:
             result = re.search('^(?P<filter>.*).py$', file)
             if result:
                 filter_name = result.group('filter')
-                print(result.group('filter'))
                 filter = importlib.import_module(f'filters.{filter_name}')
                 j2_env.filters[filter_name] = getattr(filter, filter_name)
 
         template = j2_env.get_template(renderer.template)
-        self.logger.debug(sys.path)
-
-        output = template.render(data=data)
+        meta = dict(
+            path = path,
+            renderer = renderer._get_data(),
+            config = self.liftree_config._get_data()
+        )
+        extra = dict()
+        output = template.render(data=data, meta=meta, extra=extra)
         status = HTTP_200
         content_type = CONTENT_TYPE_HTML
         return(status, content_type, output.encode('utf-8'))
 
     def _is_valid_path(self, path):
         self.logger.debug(path)
+        print(path)
         for folder in self.liftree_config.folders:
             self.logger.debug(folder)
+            print(folder)
             if path.startswith(folder['path']):
                 self.logger.debug(f'{path} IS VALID')
                 return True
@@ -229,10 +234,10 @@ class LifTree:
 if __name__ == "__main__":
     #logging.basicConfig(filename='/tmp/liftree.log',level=logging.DEBUG)
     liftree = LifTree()
-    parameters = dict(path=['/usr/local/liftree/example/data/test.yaml'])
-    parameters = dict(path=['/usr/local/liftree/example/data/test.md'])
-    parameters = dict(path=['/usr/local/liftree/example/data/test.text'])
-    parameters = dict(path=['/usr/local/liftree/example/data/test.json'])
-    # parameters = dict(path=['/usr/local/liftree/example/data/test.secret'])
+    parameters = dict(path=['/home/liftree/liftree/example/data/test.yaml'])
+    parameters = dict(path=['/home/liftree/liftree/example/data/test.md'])
+    parameters = dict(path=['/home/liftree/liftree/example/data/test.text'])
+    parameters = dict(path=['/home/liftree/liftree/example/data/test.json'])
+    # parameters = dict(path=['/home/liftree/liftree/example/data/test.secret'])
     status, content_type, output = liftree.render(parameters)
     print(status, content_type, output)

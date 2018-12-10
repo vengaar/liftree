@@ -1,10 +1,20 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8">
-  <title>Forbidden</title>
-</head>
-<body>
-  File forbidden
-</body>
-</html>
+{% extends "layout.j2" %}
+{% block body %}
+
+<div class="ui error message">
+  <div class="header">
+    This file <i>{{ meta.path }}</i> is forbidden
+  </div>
+  <ul class="list">
+    <li>This file is not inside one of folders defined in the liftree configuration.</li>
+    <li>Or this file is marked as forbidden in mapping of liftree configuration.</li>
+  </ul>
+</div>
+
+<h2 class="ui header">Folders</h2>
+<pre><code>{{ meta.config.folders|to_yaml }}<code></pre>
+
+<h2 class="ui header">Mappings</h2>
+<pre><code>{{ meta.config.mappings|to_yaml }}<code></pre>
+
+{% endblock %}

@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+  <head>
+  {% block head %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.10.0/github-markdown.min.css">
+    <style>
+      .main.container {
+        margin-top: 7em;
+      }
+    </style>
+  {% endblock %}
+  </head>
+  <body>
+    <div class="ui fixed inverted main menu">
+      <a class="item" href="/show"><i class="home icon"></i>Home</a>
+
+      <div class="ui dropdown item">
+        Show test files
+        <i class="dropdown icon"></i>
+        <div class="menu">
+          <a class="item" href="/show?path=/home/liftree/liftree/example/data/test.yaml">Yaml test file</a>
+          <a class="item" href="/show?path=/home/liftree/liftree/example/data/test.json">Json test file</a>
+          <a class="item" href="/show?path=/home/liftree/liftree/example/data/test.text">Text test file</a>
+          <a class="item" href="/show?path=/home/liftree/liftree/example/data/test.md">Markdown test file</a>
+          <a class="item" href="/show?path=/home/liftree/liftree/example/data/test.secret">Forbidden test file</a>
+        </div>
+      </div>
+
+      <div class="ui dropdown item">
+        Show setup files
+        <i class="dropdown icon"></i>
+        <div class="menu">
+          <a class="item" href="/show?path=/home/liftree/liftree/setup/httpd.conf">httpd.conf</a>
+          <a class="item" href="/show?path=/home/liftree/liftree/setup/liftree.conf">liftree.conf</a>
+          <a class="item" href="/show?path=/home/liftree/liftree/setup/logging.conf">logging.conf</a>
+          <a class="item" href="/show?path=/home/liftree/liftree/setup/setup.yml">setup.yml</a>
+        </div>
+      </div>
+
+      <div class="right menu">
+      </div>
+    </div>
+    <div class="ui text main container">
+    {% block body %}
+    </div>
+    {% endblock %}
+    {% block footer %}
+    <!-- scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+      'use strict'
+      $('.ui.dropdown').dropdown();
+    </script>
+    {% endblock %}
+    </body>
+</html>
