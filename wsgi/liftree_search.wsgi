@@ -4,6 +4,7 @@ import json
 # liftree import
 from liftree import *
 from constants import *
+from utils import format_search_results_for_sui
 
 def application(environ, start_response):
 
@@ -11,18 +12,14 @@ def application(environ, start_response):
 
     try:
         parameters = parse_qs(environ['QUERY_STRING'])
+
+        query = parameters.get('query', [''])[0]
+        by_cat = parameters.get('by_cat', ["false"])[0]
         _liftree = LifTree()
-        raw_results = _liftree.search(parameters)
+        raw_results = _liftree.search(query)
         format = parameters.get('format', ["raw"])[0]
         if format == 'sui':
-            # @todo add format function
-            formatted_results = [
-                dict(
-                    title=result,
-                    url=f'/show?path={result}'
-                )
-                for result in raw_results.get('files', [])
-            ]
+            formatted_results = format_search_results_for_sui(raw_results['files'])
             output = dict(results=formatted_results)
         else:
             output = raw_results

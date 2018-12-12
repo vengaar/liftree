@@ -1,0 +1,47 @@
+{
+    "forbidden": {
+        "name": "forbidden",
+        "results": [
+          {
+            "title": "/home/liftree/liftree/example/data/test.secret",
+            "url": "/show?path=/home/liftree/liftree/example/data/test.secret"
+          }
+        ]
+    },
+    "json": {
+      "name": "json",
+      "results": [
+        {
+          "title": "/home/liftree/liftree/example/data/test.json",
+           "url": "/show?path=/home/liftree/liftree/example/data/test.json"
+        }
+      ]
+    },
+    "markdown": {
+      "name": "markdown",
+      "results": [
+        {
+          "title": "/home/liftree/liftree/example/data/test.md",
+          "url": "/show?path=/home/liftree/liftree/example/data/test.md"
+        }
+      ]
+    },
+    "raw": {
+      "name": "raw",
+      "results": [
+        {
+          "title": "/home/liftree/liftree/example/data/test.text",
+          "url": "/show?path=/home/liftree/liftree/example/data/test.text"
+        }
+      ]
+    },
+    "yaml": {
+      "name": "yaml",
+      "results": [
+        {
+          "title": "/home/liftree/liftree/example/data/test.yaml",
+          "url": "/show?path=/home/liftree/liftree/example/data/test.yaml"
+        }
+      ]
+    }
+}

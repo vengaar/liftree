@@ -2,9 +2,9 @@ from cgi import parse_qs
 from jinja2 import Environment, FileSystemLoader
 import json
 import yaml
-import re
+import re, fnmatch
 import logging, logging.config
-import importlib
+import importlib, inspect
 import sys, os, grp, stat
 import glob
 
@@ -26,7 +26,7 @@ class LifTreeObject:
 class Renderer(LifTreeObject):
     def __init__(self, name, renderers):
         self.name = name
-        self.method = renderers[name].get('content')
+        self.loader = renderers[name].get('loader')
         self.template = renderers[name].get('template')
         self.content_type = renderers[name].get('content_type', CONTENT_TYPE_HTML)
 
@@ -117,16 +117,11 @@ class LifTree:
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.debug(self.liftree_config)
 
-    def search(self, parameters):
-
-        by_cat = parameters.get('by_cat', ["false"])[0]
-        query = parameters.get('query', [''])[0]
+    def search(self, query):
         pattern = query.replace(' ', '.*')
         re_pattern = re.compile(f'.*{pattern}.*')
-
         result_files = []
         result_folders = []
-
         for folder in self.liftree_config.folders:
             root_dir = folder['path']
             result_folders.append(root_dir)
@@ -148,25 +143,27 @@ class LifTree:
                 ]
                 result_folders.extend(fullpath_foders)
 
-        if by_cat == "true":
-            result = dict()
-            for file in result_files:
+        valids_files = dict()
+        for file in result_files:
+            folder = self._is_valid_path(file)
+            if folder is not None:
                 renderer = self._get_renderer(file)
-                if renderer.name not in result:
-                    result[renderer.name] = []
-                result[renderer.name].append(file)
-            result['dirs'] = result_folders
-        else:
-            result = dict(files=result_files, dirs=result_folders)
-        return result
+                if renderer.name not in valids_files:
+                    valids_files[renderer.name] = []
+                valids_files[renderer.name].append(file)
+        results = dict(files=valids_files)
+        return results
 
     def render(self, parameters):
         path = self._get_path(parameters)
-        renderer = self._get_renderer(path)
+        folder = self._is_valid_path(path)
+        if folder is None:
+            renderer = Renderer('forbidden', self.liftree_config.renderers)
+        else:
+            renderer = self._get_renderer(path)
         self.logger.debug(f'renderer={renderer}')
-        if renderer.method is not None:
-            content = renderer.method
-            loader = importlib.import_module(f'loaders.{content}')
+        if renderer.loader is not None:
+            loader = importlib.import_module(f'loaders.{renderer.loader}')
             data = loader.load(path)
         else:
             data = None
@@ -174,18 +171,25 @@ class LifTree:
             loader=FileSystemLoader(self.liftree_config.templates),
             trim_blocks=True
         )
+        # Add custom filters
         dir_path = os.path.dirname(os.path.realpath(__file__))
         dir_filters = os.path.join(dir_path, 'filters')
         for file in os.listdir(dir_filters):
-            result = re.search('^(?P<filter>.*).py$', file)
-            if result:
-                filter_name = result.group('filter')
-                filter = importlib.import_module(f'filters.{filter_name}')
-                j2_env.filters[filter_name] = getattr(filter, filter_name)
+            result = re.search('^(?P<module_name>.*).py$', file)
+            if result is not None:
+                module_name = result.group('module_name')
+                module_filter = importlib.import_module(f'filters.{module_name}')
+                for tuple_function in inspect.getmembers(module_filter, predicate=inspect.isfunction):
+                    (name, function) = tuple_function
+                    filter_prefix = 'filter_'
+                    if name.startswith(filter_prefix):
+                        filter_name = name[len(filter_prefix):]
+                        j2_env.filters[filter_name] = function
 
         template = j2_env.get_template(renderer.template)
         meta = dict(
             path = path,
+            folder = folder,
             renderer = renderer._get_data(),
             config = self.liftree_config._get_data()
         )
@@ -196,25 +200,29 @@ class LifTree:
         return(status, content_type, output.encode('utf-8'))
 
     def _is_valid_path(self, path):
+        """
+        """
         self.logger.debug(path)
         for folder in self.liftree_config.folders:
             self.logger.debug(folder)
             if path.startswith(folder['path']):
-                self.logger.debug(f'{path} IS VALID')
-                return True
-        return False
+                if 'excludes' in folder:
+                    for exclude in folder['excludes']:
+                        if re.match(exclude, path) is not None:
+                            return None
+                    return folder
+                else:
+                    return folder
+        return None
 
     def _get_renderer(self, path):
-        renderer = Renderer('forbidden', self.liftree_config.renderers)
-        if self._is_valid_path(path):
-            for mapping in self.liftree_config.mappings:
-                self.logger.debug(mapping)
-                if re.match(mapping['path'], path) is not None:
-                    renderer_name = mapping['renderer']
-                    self.logger.debug(renderer_name)
-                    renderer = Renderer(renderer_name, self.liftree_config.renderers)
-                    break
-        self.logger.debug(renderer)
+        for mapping in self.liftree_config.mappings:
+            self.logger.debug(mapping)
+            if re.match(mapping['path'], path) is not None:
+                renderer_name = mapping['renderer']
+                self.logger.debug(renderer_name)
+                renderer = Renderer(renderer_name, self.liftree_config.renderers)
+                break
         return renderer
 
     def _get_path(self, parameters):
@@ -224,14 +232,3 @@ class LifTree:
             path = self.liftree_config.defaults['path']
         self.logger.debug(path)
         return path
-
-if __name__ == "__main__":
-    #logging.basicConfig(filename='/tmp/liftree.log',level=logging.DEBUG)
-    liftree = LifTree()
-    parameters = dict(path=['/home/liftree/liftree/example/data/test.yaml'])
-    parameters = dict(path=['/home/liftree/liftree/example/data/test.md'])
-    parameters = dict(path=['/home/liftree/liftree/example/data/test.text'])
-    parameters = dict(path=['/home/liftree/liftree/example/data/test.json'])
-    # parameters = dict(path=['/home/liftree/liftree/example/data/test.secret'])
-    status, content_type, output = liftree.render(parameters)
-    print(status, content_type, output)
