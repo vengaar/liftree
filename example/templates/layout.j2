@@ -17,7 +17,7 @@
   </head>
   <body>
     <div class="ui fixed inverted main menu">
-      <a class="item" href="/show"><i class="home icon"></i>Home</a>
+      <a class="item" href="/show"><i class="leaf icon"></i>Home</a>
 
       <div class="ui dropdown item">
         Show test files
@@ -43,6 +43,13 @@
       </div>
 
       <div class="right menu">
+        <div class="ui right aligned category search item">
+          <div class="ui _transparent icon input">
+            <input class="prompt" type="text" placeholder="Search ...">
+            <i class="search link icon"></i>
+          </div>
+          <div class="results"></div>
+        </div>
       </div>
     </div>
     <div class="ui text main container">
@@ -60,6 +67,12 @@
     <script>
       'use strict'
       $('.ui.dropdown').dropdown();
+      $('.ui.search').search({
+        //type: 'category',
+        apiSettings: {
+          url: '/search?query={query}&format=sui'
+        },
+      });
     </script>
     {% endblock %}
     </body>

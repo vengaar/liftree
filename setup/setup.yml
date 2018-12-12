@@ -9,6 +9,7 @@
           - python3-mod_wsgi
           - python3-jinja2
           - python3-json-logger
+          # - setroubleshoot-server
         state: latest
 
     - file:
@@ -39,6 +40,27 @@
     - copy:
         src: httpd.conf
         dest: /etc/httpd/conf.d/liftree.conf
+
+# About selinux
+
+## setsebool -P httpd_enable_homedirs on
+## setsebool -P httpd_read_user_content on
+# semanage boolean --list | grep httpd | grep '(on'
+
+# ls -Z /home/liftree/liftree
+# semanage fcontext -a -t httpd_sys_content_t '/home/liftree/liftree(/.*)?'
+# semanage fcontext -d "/home/liftree/liftree(/.*)?"
+# restorecon -R -v /home/liftree/liftree/
+
+# ls -Z /home/liftree/liftree.log
+# semanage fcontext -a -t httpd_log_t /home/liftree/liftree.log
+## semanage fcontext -a -t httpd_sys_rw_content_t /home/liftree/liftree.log
+# semanage fcontext -d /home/liftree/liftree.log
+## restorecon -v /home/liftree/liftree.log
+
+    # - selinux:
+    #     policy: targeted
+    #     state: permissive
 
     - systemd:
         name: httpd

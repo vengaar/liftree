@@ -163,7 +163,6 @@ class LifTree:
     def render(self, parameters):
         path = self._get_path(parameters)
         renderer = self._get_renderer(path)
-
         self.logger.debug(f'renderer={renderer}')
         if renderer.method is not None:
             content = renderer.method
@@ -171,13 +170,10 @@ class LifTree:
             data = loader.load(path)
         else:
             data = None
-
-        current_dir = '/usr/local/liftree/template'
         j2_env = Environment(
             loader=FileSystemLoader(self.liftree_config.templates),
             trim_blocks=True
         )
-
         dir_path = os.path.dirname(os.path.realpath(__file__))
         dir_filters = os.path.join(dir_path, 'filters')
         for file in os.listdir(dir_filters):
@@ -201,10 +197,8 @@ class LifTree:
 
     def _is_valid_path(self, path):
         self.logger.debug(path)
-        print(path)
         for folder in self.liftree_config.folders:
             self.logger.debug(folder)
-            print(folder)
             if path.startswith(folder['path']):
                 self.logger.debug(f'{path} IS VALID')
                 return True
