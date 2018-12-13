@@ -2,12 +2,12 @@
 {% block body %}
 <h2 class="ui header">Data coming from file</h2>
 {% if meta.renderer.loader in ('yaml', 'json') %}
-<pre><code>{{ data|to_yaml }}<code></pre>
+<pre><code id="liftree_data">{{ data|to_yaml }}</code></pre>
 {% else %}
-<pre><code>{{ data }}<code></pre>
+<pre><code>{{ data }}</code></pre>
 {% endif %}
 <h2 class="ui header">Data coming from liftree</h2>
-<pre><code>{{ meta|to_yaml }}<code></pre>
+<pre><code>{{ meta|to_yaml }}</code></pre>
 <h2 class="ui header">The extra data</h2>
-<pre><code>{{ extra|to_yaml }}<code></pre>
+<pre><code>{{ extra|to_yaml }}</code></pre>
 {% endblock %}

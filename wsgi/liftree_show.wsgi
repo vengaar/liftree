@@ -3,13 +3,15 @@ import traceback
 # liftree import
 from liftree import *
 from constants import *
+from utils import get_first_parameter
 
 def application(environ, start_response):
 
     try:
         parameters = parse_qs(environ['QUERY_STRING'])
+        path = get_first_parameter('path', parameters)
         _liftree = LifTree()
-        status, content_type, output = _liftree.render(parameters)
+        status, content_type, output = _liftree.render(path)
     except:
         status = HTTP_500
         content_type = CONTENT_TYPE_TEXT

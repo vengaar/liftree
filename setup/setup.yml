@@ -9,8 +9,9 @@
           - python3-mod_wsgi
           - python3-jinja2
           - python3-json-logger
-          - python3-markdown 
-          - libselinux-python 
+          - python3-markdown
+          - libselinux-python
+          - python3-beautifulsoup4
           # - setroubleshoot-server
         state: latest
 

@@ -154,8 +154,8 @@ class LifTree:
         results = dict(files=valids_files)
         return results
 
-    def render(self, parameters):
-        path = self._get_path(parameters)
+    def render(self, path):
+        path = self.liftree_config.defaults['path'] if path is None else path
         folder = self._is_valid_path(path)
         if folder is None:
             renderer = Renderer('forbidden', self.liftree_config.renderers)
@@ -224,11 +224,3 @@ class LifTree:
                 renderer = Renderer(renderer_name, self.liftree_config.renderers)
                 break
         return renderer
-
-    def _get_path(self, parameters):
-        if 'path' in parameters:
-            path = parameters['path'][0]
-        else:
-            path = self.liftree_config.defaults['path']
-        self.logger.debug(path)
-        return path

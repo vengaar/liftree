@@ -1,4 +1,11 @@
 
+def get_first_parameter(name, parameters):
+    if name in parameters:
+        path = parameters[name][0]
+    else:
+        return None
+    return path
+
 def format_search_results_for_sui(search_results):
     """
         Transform liftree search results to SUI format
