@@ -1,4 +1,3 @@
-from cgi import parse_qs
 from jinja2 import Environment, FileSystemLoader
 import json
 import yaml
