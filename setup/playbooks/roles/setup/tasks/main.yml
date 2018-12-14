@@ -1,0 +1,98 @@
+---
+
+# - name: Create user
+#   user:
+#     name: "{{ liftree_user }}"
+#     comment: Liftree applicatif user
+#
+# - name: Clone git repo on user home
+#   become: true
+#   become_user: "{{ liftree_user }}"
+#   git:
+#     repo: https://github.com/vengaar/liftree.git
+#     dest: /home/{{ liftree_user }}/liftree
+#     update: no
+
+- name: Insall dependencies
+  dnf:
+    name:
+      - httpd
+      - python3-mod_wsgi
+      - python3-jinja2
+      - python3-json-logger
+      - python3-markdown
+      - libselinux-python
+      - python3-beautifulsoup4
+      # - setroubleshoot-server
+    state: latest
+
+- name: Create config directory
+  file:
+    path: /etc/liftree/conf.d/
+    state: directory
+
+- name: Deploy logging configuration
+  template:
+    src: logging.conf
+    dest: /etc/liftree/logging.conf
+
+- name: Deploy liftree entry point configuration
+  template:
+    src: liftree.conf
+    dest: /etc/liftree/liftree.conf
+
+- name: Deploy liftree example config
+  copy:
+    dest: /etc/liftree/conf.d/example.conf
+    content: |
+      ---
+      name: /home/{{ liftree_user }}/liftree/example
+      ...
+
+- name: Update permission to allow apache reach wsgi
+  file:
+    path: /home/{{ liftree_user }}
+    recurse: true
+    state: directory
+    mode: 0755
+
+- name: Deploy apache configuration
+  template:
+    src: httpd.conf
+    dest: /etc/httpd/conf.d/liftree.conf
+
+- name: Get selinux state
+  command: getenforce
+  register: getenforce
+
+- name: Manage selinux
+  when: getenforce.stdout == "Enforcing"
+  block:
+
+    - name: Set selinux boolean to use home
+      command: setsebool -P {{ item }} on
+      loop:
+        - httpd_enable_homedirs
+        - httpd_read_user_content
+
+    - name: Create empty log file
+      file:
+        path: "{{ liftree_logfile }}"
+        state: touch
+        owner: "{{ liftree_user }}"
+        group: "{{ liftree_user }}"
+
+    - name: Set context for log file
+      sefcontext:
+        target: "{{ liftree_logfile }}"
+        setype: httpd_sys_rw_content_t
+        state: present
+
+    - name: Apply new SELinux file context to log file
+      command: restorecon -iv {{ liftree_logfile }}
+
+- name: Reload apache config
+  systemd:
+    name: httpd
+    state: reloaded
+    enabled: yes

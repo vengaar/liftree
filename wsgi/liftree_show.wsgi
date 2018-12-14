@@ -1,5 +1,6 @@
 import traceback
 from cgi import parse_qs
+from logging.config import fileConfig
 
 # liftree import
 from liftree import *
@@ -9,6 +10,7 @@ from utils import get_first_parameter
 def application(environ, start_response):
 
     try:
+        fileConfig('/etc/liftree/logging.conf')
         parameters = parse_qs(environ['QUERY_STRING'])
         path = get_first_parameter('path', parameters)
         _liftree = LifTree()

@@ -9,6 +9,7 @@ import glob
 
 # liftree import
 from constants import *
+from loaders.yaml import load as liftree_load_yaml
 
 class LifTreeObject:
 
@@ -28,6 +29,7 @@ class Renderer(LifTreeObject):
         self.loader = renderers[name].get('loader')
         self.template = renderers[name].get('template')
         self.content_type = renderers[name].get('content_type', CONTENT_TYPE_HTML)
+        self.extra = renderers[name].get('extra')
 
 class LifTreeConfig(LifTreeObject):
 
@@ -38,18 +40,12 @@ class LifTreeConfig(LifTreeObject):
     root_include_pattern = os.path.join(root_include_dir, '*.conf')
 
     def __init__(self):
-
+        self._logger = logging.getLogger(self.__class__.__name__)
         generated_config_exist = os.path.isfile(self.generated_config_file)
         if generated_config_exist:
             self._init_from_file(self.generated_config_file)
         else:
             self._init_from_file(self.root_config_file)
-
-        log_config = self.defaults.get('log_config')
-        if log_config is not None:
-            logging.config.fileConfig(log_config)
-        self._logger = logging.getLogger(self.__class__.__name__)
-
         generate = False
         generate_config = self.defaults.get('generate_config')
         if generate_config == 'always':
@@ -192,11 +188,41 @@ class LifTree:
             renderer = renderer._get_data(),
             config = self.liftree_config._get_data()
         )
-        extra = dict()
-        output = template.render(data=data, meta=meta, extra=extra)
+        extra_sources = self._build_extra(renderer, folder)
+        extra = self._get_extra(path, extra_sources)
+        output = template.render(data=data, meta=meta, extra=extra, extra_sources=extra_sources)
         status = HTTP_200
         content_type = CONTENT_TYPE_HTML
         return(status, content_type, output.encode('utf-8'))
+
+    def _build_extra(self, renderer, folder):
+        """
+            Build precedence between extra
+            renderer > folder
+        """
+        extra_sources = dict()
+        if 'extra' in folder:
+            extra_sources.update(folder['extra'])
+        if renderer.extra is not None:
+            extra_sources.update(renderer.extra)
+        return extra_sources
+
+    def _get_extra(self, path, extra_def):
+        data = dict()
+        if 'files' in extra_def:
+            for key, file in extra_def['files'].items():
+                data[key] = liftree_load_yaml(file)
+        if 'scripts' in extra_def:
+            for key, script in extra_def['scripts'].items():
+                try:
+                    module_name = os.path.splitext(os.path.basename(script))[0]
+                    spec = importlib.util.spec_from_file_location(module_name, script)
+                    module_get_data = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(module_get_data)
+                    data[key] = module_get_data.get_data(path)
+                except FileNotFoundError:
+                    data[key] = "FileNotFoundError"
+        return data
 
     def _is_valid_path(self, path):
         """

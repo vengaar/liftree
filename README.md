@@ -25,3 +25,11 @@ Test url:
 * http://{your_ip}/search
 * http://{your_ip}/show
 * http://{your_ip}/show?path=/home/liftree/liftree/example/data/test.md
+
+# unittest
+
+## All unittest
+python3 -m unittest discover -s test/
+
+## One test with debug
+python3 test/test_render.py

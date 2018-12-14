@@ -8,6 +8,8 @@
 {% endif %}
 <h2 class="ui header">Data coming from liftree</h2>
 <pre><code>{{ meta|to_yaml }}</code></pre>
+<h2 class="ui header">Extra data sources</h2>
+<pre><code>{{ extra_sources|to_yaml }}</code></pre>
 <h2 class="ui header">The extra data</h2>
 <pre><code>{{ extra|to_yaml }}</code></pre>
 {% endblock %}

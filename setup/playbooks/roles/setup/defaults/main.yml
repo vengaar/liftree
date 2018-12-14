@@ -1,0 +1,11 @@
+---
+
+liftree_user: liftree
+#liftree_user: deploy
+
+liftree_logfile: /home/{{ liftree_user }}/liftree.log
+
+# Caution use another port can apply to update firewalld config
+liftree_port: 80
+
+...
