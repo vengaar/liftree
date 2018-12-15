@@ -15,7 +15,7 @@ useradd liftree
 su - liftree
 git clone https://github.com/vengaar/liftree.git
 exit
-ansible-playbook /home/liftree/liftree/setup/setup.yml
+ansible-playbook /home/liftree/liftree/setup/playbooks/setup.yml -v
 ~~~~
 
 ## Test
@@ -24,4 +24,3 @@ Test url:
 * http://{your_ip}/info
 * http://{your_ip}/search
 * http://{your_ip}/show
-* http://{your_ip}/show?path=/home/liftree/liftree/example/data/test.md

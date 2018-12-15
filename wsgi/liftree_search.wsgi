@@ -1,6 +1,7 @@
 import traceback
 from cgi import parse_qs
 import json
+from logging.config import fileConfig
 
 # liftree import
 from liftree import *
@@ -9,16 +10,15 @@ from utils import format_search_results_for_sui
 
 def application(environ, start_response):
 
-    search_formats = ('sui', 'raw')
-
     try:
+        fileConfig('/etc/liftree/logging.conf')
         parameters = parse_qs(environ['QUERY_STRING'])
-
         query = parameters.get('query', [''])[0]
         by_cat = parameters.get('by_cat', ["false"])[0]
         _liftree = LifTree()
         raw_results = _liftree.search(query)
         format = parameters.get('format', ["raw"])[0]
+        # search_formats = ('sui', 'raw')
         if format == 'sui':
             formatted_results = format_search_results_for_sui(raw_results['files'])
             output = dict(results=formatted_results)

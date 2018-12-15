@@ -1,9 +1,9 @@
 {
   "files": {
-    "forbidden": ["/home/liftree/liftree/example/data/test.secret"],
-    "json": ["/home/liftree/liftree/example/data/test.json"],
-    "markdown": ["/home/liftree/liftree/example/data/test.md"],
-    "raw": ["/home/liftree/liftree/example/data/test.text"],
-    "yaml": ["/home/liftree/liftree/example/data/test.yaml"]
+    "forbidden": ["/home/liftree/liftree/test/data/test.secret"],
+    "json": ["/home/liftree/liftree/test/data/test.json"],
+    "markdown": ["/home/liftree/liftree/test/data/test.md"],
+    "raw": ["/home/liftree/liftree/test/data/test.text"],
+    "yaml": ["/home/liftree/liftree/test/data/test.yaml"]
   }
 }

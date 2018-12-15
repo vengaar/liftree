@@ -2,17 +2,25 @@ import unittest
 import yaml
 import json
 from bs4 import BeautifulSoup
+import logging
+import pprint
 
 # liftree import
-import sys
-sys.path.append('../bin')
+from liftree_test import LIFTREE_PATH_TEST, LIFTREE_PATH_ROOT
 from liftree import LifTree
 from constants import HTTP_200, CONTENT_TYPE_HTML
 
 class TestRender(unittest.TestCase):
 
-    test_file_json = '/home/liftree/liftree/example/data/test.json'
-    test_file_secret = '/home/liftree/liftree/example/data/test.secret'
+    test_file_json = f'{LIFTREE_PATH_TEST}/data/test.json'
+    # Not existing file => unavailable
+    test_file_none = '/tmp/flgkgkiejjk/158468764'
+    # Out of folders  => unavailable
+    test_file_out = '/etc/passwd'
+    # Excluded from folder => unavailable
+    test_file_exclude = f'{LIFTREE_PATH_ROOT}/search_test_raw.json'
+    # Marked as forbidden in mapping  => unavailable
+    test_file_forbidden = f'{LIFTREE_PATH_TEST}/data/test.secret'
 
     def test_is_valid(self):
         liftree = LifTree()
@@ -21,17 +29,16 @@ class TestRender(unittest.TestCase):
         folder = liftree._is_valid_path(self.test_file_json)
         self.assertEqual(folder['name'], 'liftree')
 
-        # Valid file event forbidden in mapping
-        folder = liftree._is_valid_path(self.test_file_secret)
+        # Valid file but forbidden in mapping
+        folder = liftree._is_valid_path(self.test_file_forbidden)
         self.assertEqual(folder['name'], 'liftree')
 
-        # File not in folder
-        folder = liftree._is_valid_path('/etc/passwd')
-        self.assertIsNone(folder)
-
-        # File in folder but in excludes list
-        folder = liftree._is_valid_path('/home/liftree/liftree/.git/config')
-        self.assertIsNone(folder)
+        for path in [
+            self.test_file_out,
+            self.test_file_exclude
+        ]:
+            folder = liftree._is_valid_path(path)
+            self.assertIsNone(folder)
 
     def test_get_renderer(self):
         liftree = LifTree()
@@ -41,14 +48,48 @@ class TestRender(unittest.TestCase):
         self.assertEqual(renderer.name, 'json')
 
         # File forbidden in mapping
-        renderer = liftree._get_renderer(self.test_file_secret)
+        renderer = liftree._get_renderer(self.test_file_forbidden)
         self.assertEqual(renderer.name, 'forbidden')
 
         # Files not valid but matching pattern
-        # Security concern of _is_valid_path not _get_renderer
-        for path in ('/etc/passwd', '/home/liftree/liftree/.git/config'):
-            renderer = liftree._get_renderer('/etc/passwd')
-            self.assertEqual(renderer.name, 'raw')
+        # Security is concern of _is_valid_path not _get_renderer
+        renderer = liftree._get_renderer(self.test_file_out)
+        self.assertEqual(renderer.name, 'raw')
+        renderer = liftree._get_renderer(self.test_file_exclude)
+        self.assertEqual(renderer.name, 'json')
+
+    def test_build_extra(self):
+        liftree = LifTree()
+        folder = liftree._is_valid_path(self.test_file_json)
+        renderer = liftree._get_renderer(self.test_file_json)
+        extra_sources = liftree._build_extra(renderer, folder)
+        # print(extra_sources)
+        self.assertIsInstance(extra_sources['loaders'], dict)
+        self.assertIsInstance(extra_sources['files'], dict)
+        self.assertEqual(extra_sources['loaders']['test'], 'get_test_folder')
+
+        test_file = self.test_file_none
+        folder = liftree._is_valid_path(test_file)
+        renderer = liftree._get_renderer(test_file)
+        extra_sources = liftree._build_extra(renderer, folder)
+        self.assertIsInstance(extra_sources['loaders'], dict)
+        self.assertIsInstance(extra_sources['files'], dict)
+
+    def test_extra(self):
+        liftree = LifTree()
+        test_file = self.test_file_json
+        folder = liftree._is_valid_path(test_file)
+        renderer = liftree._get_renderer(test_file)
+        extra_sources = liftree._build_extra(renderer, folder)
+        extra = LifTree()._get_extra(extra_sources, test_file)
+        self.assertEqual(extra['test'], 'I love Liftree')
+
+        renderer._add_extra('loaders', 'test', 'get_test_page')
+        renderer._add_extra('files', 'secret', self.test_file_forbidden)
+        extra_sources = liftree._build_extra(renderer, folder)
+        extra = LifTree()._get_extra(extra_sources, self.test_file_json)
+        self.assertEqual(extra['test'], 'I love this page')
+        self.assertEqual(extra['secret'], 'The secret file')
 
     def test_render(self):
         liftree = LifTree()
@@ -63,5 +104,8 @@ class TestRender(unittest.TestCase):
             expected_data = json.load(file)
             self.assertEqual(data, expected_data)
 
+        # print(liftree.render('/home/liftree/liftree/setup/playbooks/setup.yml'))
+
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
     unittest.main()

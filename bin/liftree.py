@@ -9,6 +9,7 @@ import glob
 
 # liftree import
 from constants import *
+from loaders.file_yaml_loader import get_data as load_yaml_file
 
 class LifTreeObject:
 
@@ -28,6 +29,13 @@ class Renderer(LifTreeObject):
         self.loader = renderers[name].get('loader')
         self.template = renderers[name].get('template')
         self.content_type = renderers[name].get('content_type', CONTENT_TYPE_HTML)
+        self.extra = renderers[name].get('extra', dict())
+
+    def _add_extra(self, type, name, source):
+        assert type in ('files', 'loaders')
+        if not type in self.extra:
+            self.extra[type] = dict()
+        self.extra[type][name] = source
 
 class LifTreeConfig(LifTreeObject):
 
@@ -38,18 +46,12 @@ class LifTreeConfig(LifTreeObject):
     root_include_pattern = os.path.join(root_include_dir, '*.conf')
 
     def __init__(self):
-
+        self._logger = logging.getLogger(self.__class__.__name__)
         generated_config_exist = os.path.isfile(self.generated_config_file)
         if generated_config_exist:
             self._init_from_file(self.generated_config_file)
         else:
             self._init_from_file(self.root_config_file)
-
-        log_config = self.defaults.get('log_config')
-        if log_config is not None:
-            logging.config.fileConfig(log_config)
-        self._logger = logging.getLogger(self.__class__.__name__)
-
         generate = False
         generate_config = self.defaults.get('generate_config')
         if generate_config == 'always':
@@ -59,6 +61,7 @@ class LifTreeConfig(LifTreeObject):
         self._logger.debug(f'generate_config={generate_config}')
         self._logger.debug(f'generated_config_exist={generated_config_exist}')
         self._logger.debug(f'generate={generate}')
+        self.import_path = []
         if generate:
             self._init_from_file(self.root_config_file)
             for file in glob.glob(self.root_include_pattern):
@@ -67,6 +70,8 @@ class LifTreeConfig(LifTreeObject):
                     config_include = yaml.load(stream)
                 self._import_config(config_include)
             # self._write()
+
+        sys.path = sys.path + self.import_path
 
         self._logger.debug(f'folders={self.folders}')
         self._logger.debug(f'templates={self.templates}')
@@ -95,6 +100,11 @@ class LifTreeConfig(LifTreeObject):
         self._logger.debug(config_include)
         config_folder = config_include['name']
         config_file = os.path.join(config_folder, 'liftree.conf')
+
+        self.import_path.append(os.path.join(config_folder))
+        # self.import_path.append(os.path.join(config_folder, 'loaders'))
+        # self.import_path.append(os.path.join(config_folder, 'filters'))
+
         self._logger.debug(config_file)
         with open(config_file, 'r') as stream:
             config = yaml.load(stream)
@@ -162,8 +172,7 @@ class LifTree:
             renderer = self._get_renderer(path)
         self.logger.debug(f'renderer={renderer}')
         if renderer.loader is not None:
-            loader = importlib.import_module(f'loaders.{renderer.loader}')
-            data = loader.load(path)
+            data = self._get_data(renderer.loader, path)
         else:
             data = None
         j2_env = Environment(
@@ -192,11 +201,39 @@ class LifTree:
             renderer = renderer._get_data(),
             config = self.liftree_config._get_data()
         )
-        extra = dict()
-        output = template.render(data=data, meta=meta, extra=extra)
+        extra_sources = self._build_extra(renderer, folder)
+        extra = self._get_extra(extra_sources, path)
+        output = template.render(data=data, meta=meta, extra=extra, extra_sources=extra_sources)
         status = HTTP_200
         content_type = CONTENT_TYPE_HTML
         return(status, content_type, output.encode('utf-8'))
+
+    def _build_extra(self, renderer, folder):
+        """
+            Build precedence between extra
+            renderer > folder
+        """
+        extra_sources = dict(files=dict(), loaders=dict())
+        if folder is not None and 'extra' in folder:
+            extra_sources.update(folder['extra'])
+        extra_sources.update(renderer.extra)
+        return extra_sources
+
+    def _get_extra(self, extra_sources, path):
+        data = dict()
+        if 'files' in extra_sources:
+            for key, file in extra_sources['files'].items():
+                data[key] = load_yaml_file(file)
+        if 'loaders' in extra_sources:
+            for key, loader_name in extra_sources['loaders'].items():
+                data[key] = self._get_data(loader_name, path)
+
+        return data
+
+    def _get_data(self, loader_name, path):
+        self.logger.debug(sys.path)
+        loader = importlib.import_module(f'loaders.{loader_name}')
+        return loader.get_data(path)
 
     def _is_valid_path(self, path):
         """
