@@ -1,7 +1,7 @@
 {% extends "layout.j2" %}
 {% block body %}
 <h2 class="ui header">Data coming from file</h2>
-{% if meta.renderer.loader in ('yaml', 'json') %}
+{% if meta.renderer.loader in ('file_yaml_loader', 'file_json_loader') %}
 <pre><code id="liftree_data">{{ data|to_yaml }}</code></pre>
 {% else %}
 <pre><code>{{ data }}</code></pre>

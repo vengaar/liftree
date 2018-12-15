@@ -12,16 +12,15 @@ class TestRender(unittest.TestCase):
 
     def test_import_path(self):
         expeced_path = [
-            f'{LIFTREE_PATH_ROOT}/apps/example/loaders',
-            f'{LIFTREE_PATH_ROOT}/apps/example/filters'
+            f'{LIFTREE_PATH_ROOT}/apps/example',
         ]
         liftreec_config = LifTreeConfig()
         # pprint.pprint(expeced_path)
         # pprint.pprint(liftreec_config.import_path)
         # pprint.pprint(sys.path)
-        # pprint.pprint(sys.path[-2:])
+        # pprint.pprint(sys.path[-1:])
         self.assertEqual(liftreec_config.import_path, expeced_path)
-        self.assertEqual(sys.path[-len(liftreec_config.import_path):], liftreec_config.import_path)
+        self.assertEqual(sys.path[-1:], liftreec_config.import_path)
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)

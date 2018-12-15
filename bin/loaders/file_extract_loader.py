@@ -1,5 +1,6 @@
 import yaml
-def load(path):
+
+def get_data(path):
     "".startswith
     prefix = "### DOC ###"
     with open(path, 'r') as stream:

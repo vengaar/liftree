@@ -9,7 +9,7 @@ import glob
 
 # liftree import
 from constants import *
-from loaders.yaml import load as liftree_load_yaml
+from loaders.file_yaml_loader import get_data as load_yaml_file
 
 class LifTreeObject:
 
@@ -29,7 +29,13 @@ class Renderer(LifTreeObject):
         self.loader = renderers[name].get('loader')
         self.template = renderers[name].get('template')
         self.content_type = renderers[name].get('content_type', CONTENT_TYPE_HTML)
-        self.extra = renderers[name].get('extra')
+        self.extra = renderers[name].get('extra', dict())
+
+    def _add_extra(self, type, name, source):
+        assert type in ('files', 'loaders')
+        if not type in self.extra:
+            self.extra[type] = dict()
+        self.extra[type][name] = source
 
 class LifTreeConfig(LifTreeObject):
 
@@ -55,6 +61,7 @@ class LifTreeConfig(LifTreeObject):
         self._logger.debug(f'generate_config={generate_config}')
         self._logger.debug(f'generated_config_exist={generated_config_exist}')
         self._logger.debug(f'generate={generate}')
+        self.import_path = []
         if generate:
             self._init_from_file(self.root_config_file)
             for file in glob.glob(self.root_include_pattern):
@@ -63,6 +70,8 @@ class LifTreeConfig(LifTreeObject):
                     config_include = yaml.load(stream)
                 self._import_config(config_include)
             # self._write()
+
+        sys.path = sys.path + self.import_path
 
         self._logger.debug(f'folders={self.folders}')
         self._logger.debug(f'templates={self.templates}')
@@ -91,6 +100,11 @@ class LifTreeConfig(LifTreeObject):
         self._logger.debug(config_include)
         config_folder = config_include['name']
         config_file = os.path.join(config_folder, 'liftree.conf')
+
+        self.import_path.append(os.path.join(config_folder))
+        # self.import_path.append(os.path.join(config_folder, 'loaders'))
+        # self.import_path.append(os.path.join(config_folder, 'filters'))
+
         self._logger.debug(config_file)
         with open(config_file, 'r') as stream:
             config = yaml.load(stream)
@@ -158,8 +172,7 @@ class LifTree:
             renderer = self._get_renderer(path)
         self.logger.debug(f'renderer={renderer}')
         if renderer.loader is not None:
-            loader = importlib.import_module(f'loaders.{renderer.loader}')
-            data = loader.load(path)
+            data = self._get_data(renderer.loader, path)
         else:
             data = None
         j2_env = Environment(
@@ -189,7 +202,7 @@ class LifTree:
             config = self.liftree_config._get_data()
         )
         extra_sources = self._build_extra(renderer, folder)
-        extra = self._get_extra(path, extra_sources)
+        extra = self._get_extra(extra_sources, path)
         output = template.render(data=data, meta=meta, extra=extra, extra_sources=extra_sources)
         status = HTTP_200
         content_type = CONTENT_TYPE_HTML
@@ -200,29 +213,27 @@ class LifTree:
             Build precedence between extra
             renderer > folder
         """
-        extra_sources = dict()
-        if 'extra' in folder:
+        extra_sources = dict(files=dict(), loaders=dict())
+        if folder is not None and 'extra' in folder:
             extra_sources.update(folder['extra'])
-        if renderer.extra is not None:
-            extra_sources.update(renderer.extra)
+        extra_sources.update(renderer.extra)
         return extra_sources
 
-    def _get_extra(self, path, extra_def):
+    def _get_extra(self, extra_sources, path):
         data = dict()
-        if 'files' in extra_def:
-            for key, file in extra_def['files'].items():
-                data[key] = liftree_load_yaml(file)
-        if 'scripts' in extra_def:
-            for key, script in extra_def['scripts'].items():
-                try:
-                    module_name = os.path.splitext(os.path.basename(script))[0]
-                    spec = importlib.util.spec_from_file_location(module_name, script)
-                    module_get_data = importlib.util.module_from_spec(spec)
-                    spec.loader.exec_module(module_get_data)
-                    data[key] = module_get_data.get_data(path)
-                except FileNotFoundError:
-                    data[key] = "FileNotFoundError"
+        if 'files' in extra_sources:
+            for key, file in extra_sources['files'].items():
+                data[key] = load_yaml_file(file)
+        if 'loaders' in extra_sources:
+            for key, loader_name in extra_sources['loaders'].items():
+                data[key] = self._get_data(loader_name, path)
+
         return data
+
+    def _get_data(self, loader_name, path):
+        self.logger.debug(sys.path)
+        loader = importlib.import_module(f'loaders.{loader_name}')
+        return loader.get_data(path)
 
     def _is_valid_path(self, path):
         """

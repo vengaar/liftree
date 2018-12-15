@@ -45,7 +45,7 @@
     dest: /etc/liftree/conf.d/example.conf
     content: |
       ---
-      name: /home/{{ liftree_user }}/liftree/example
+      name: /home/{{ liftree_user }}/liftree/apps/example
       ...
 
 - name: Update permission to allow apache reach wsgi

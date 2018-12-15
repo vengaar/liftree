@@ -3,13 +3,17 @@
 
 <div class="ui error message">
   <div class="header">
-    This file <i>{{ meta.path }}</i> is forbidden
+    This file <i>{{ meta.path }}</i> is unavailable
   </div>
+  <p>
+    A file can be unavailable for many reasons
   <ul class="list">
-    <li>This file is outside of defined folders in the liftree configuration.</li>
-    <li>Or this is inside one of defined folders but in the excludes list.</li>
-    <li>Or this file is marked as forbidden in mapping of liftree configuration.</li>
+    <li>The file doesn't exit.</li>
+    <li>The file is not in a folders defined in the liftree configuration.</li>
+    <li>The is well inside a folder defined but in the excludes list.</li>
+    <li>This file is marked as forbidden in mapping of liftree configuration.</li>
   </ul>
+  </p>
 </div>
 
 <h2 class="ui header">Folders</h2>

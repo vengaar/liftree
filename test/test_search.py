@@ -1,5 +1,6 @@
 import unittest
 import json
+import pprint
 
 # liftree import
 from liftree_test import LIFTREE_PATH_TEST
@@ -10,7 +11,8 @@ class TestSearch(unittest.TestCase):
 
     def test_search(self):
         liftree = LifTree()
-        results = liftree.search('example/data/test')
+        results = liftree.search('test/data/test')
+        # pprint.pprint(results)
         with open(f'{LIFTREE_PATH_TEST}/references/search_test_raw.json', 'r') as file:
             expected_results = json.load(file)
         self.assertEqual(results, expected_results)

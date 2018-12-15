@@ -1,3 +1,3 @@
 
 def get_data(path):
-    return 'I love Liftree'
+    return 'I love this page'
