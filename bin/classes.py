@@ -39,6 +39,7 @@ class LifTreeFolder(LifTreeExtra):
         self.excludes = data_dict.get('excludes',[])
 
 class Renderer(LifTreeExtra):
+    
     def __init__(self, data_dict, **kwargs):
         super().__init__(data_dict, **kwargs)
         self.loader = data_dict.get('loader')
