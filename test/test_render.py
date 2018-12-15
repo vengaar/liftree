@@ -27,11 +27,11 @@ class TestRender(unittest.TestCase):
 
         # Valid file
         folder = liftree._is_valid_path(self.test_file_json)
-        self.assertEqual(folder['name'], 'liftree')
+        self.assertEqual(folder.name, 'liftree')
 
         # Valid file but forbidden in mapping
         folder = liftree._is_valid_path(self.test_file_forbidden)
-        self.assertEqual(folder['name'], 'liftree')
+        self.assertEqual(folder.name, 'liftree')
 
         for path in [
             self.test_file_out,
@@ -63,7 +63,6 @@ class TestRender(unittest.TestCase):
         folder = liftree._is_valid_path(self.test_file_json)
         renderer = liftree._get_renderer(self.test_file_json)
         extra_sources = liftree._build_extra(renderer, folder)
-        # print(extra_sources)
         self.assertIsInstance(extra_sources['loaders'], dict)
         self.assertIsInstance(extra_sources['files'], dict)
         self.assertEqual(extra_sources['loaders']['test'], 'get_test_folder')
@@ -84,8 +83,8 @@ class TestRender(unittest.TestCase):
         extra = LifTree()._get_extra(extra_sources, test_file)
         self.assertEqual(extra['test'], 'I love Liftree')
 
-        renderer._add_extra('loaders', 'test', 'get_test_page')
-        renderer._add_extra('files', 'secret', self.test_file_forbidden)
+        renderer._add_extra_loader('test', 'get_test_page')
+        renderer._add_extra_file('secret', self.test_file_forbidden)
         extra_sources = liftree._build_extra(renderer, folder)
         extra = LifTree()._get_extra(extra_sources, self.test_file_json)
         self.assertEqual(extra['test'], 'I love this page')
