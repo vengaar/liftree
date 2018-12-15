@@ -10,7 +10,7 @@ import glob
 # liftree import
 from constants import *
 from loaders.file_yaml_loader import get_data as load_yaml_file
-from liftree_object import LifTreeObject, LifTreeFolder, Renderer
+from classes import LifTreeObject, LifTreeFolder, Renderer
 
 class LifTreeConfig(LifTreeObject):
 
