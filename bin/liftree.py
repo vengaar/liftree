@@ -10,32 +10,7 @@ import glob
 # liftree import
 from constants import *
 from loaders.file_yaml_loader import get_data as load_yaml_file
-
-class LifTreeObject:
-
-    def _get_data(self):
-        return dict(
-            (key, value)
-            for key, value in self.__dict__.items()
-            if not key.startswith('_')
-        )
-
-    def __str__(self):
-        return str(self._get_data())
-
-class Renderer(LifTreeObject):
-    def __init__(self, name, renderers):
-        self.name = name
-        self.loader = renderers[name].get('loader')
-        self.template = renderers[name].get('template')
-        self.content_type = renderers[name].get('content_type', CONTENT_TYPE_HTML)
-        self.extra = renderers[name].get('extra', dict())
-
-    def _add_extra(self, type, name, source):
-        assert type in ('files', 'loaders')
-        if not type in self.extra:
-            self.extra[type] = dict()
-        self.extra[type][name] = source
+from liftree_object import LifTreeObject, LifTreeFolder, Renderer
 
 class LifTreeConfig(LifTreeObject):
 
@@ -77,6 +52,10 @@ class LifTreeConfig(LifTreeObject):
         self._logger.debug(f'templates={self.templates}')
         self._logger.debug(f'mappings={self.mappings}')
 
+    def get_renderer(self, name):
+        renderer_data = self.renderers[name]
+        return Renderer(renderer_data, name=name)
+
     def _init_from_file(self, file):
         with open(self.root_config_file, 'r') as stream:
             config = yaml.load(stream)
@@ -111,6 +90,10 @@ class LifTreeConfig(LifTreeObject):
         renderers = config.get('renderers', dict())
         self.renderers.update(renderers)
         folders = config.get('folders', [])
+        folders = [
+            LifTreeFolder(data)
+            for data in config.get('folders', [])
+        ]
         self.folders.extend(folders)
         mappings = config.get('mappings', [])
         self.mappings = mappings + self.mappings
@@ -132,7 +115,7 @@ class LifTree:
         result_files = []
         result_folders = []
         for folder in self.liftree_config.folders:
-            root_dir = folder['path']
+            root_dir = folder.path
             result_folders.append(root_dir)
             for root, dirs, files in os.walk(root_dir):
                 fullpath_files = [
@@ -167,7 +150,7 @@ class LifTree:
         path = self.liftree_config.defaults['path'] if path is None else path
         folder = self._is_valid_path(path)
         if folder is None:
-            renderer = Renderer('forbidden', self.liftree_config.renderers)
+            renderer = self.liftree_config.get_renderer('forbidden')
         else:
             renderer = self._get_renderer(path)
         self.logger.debug(f'renderer={renderer}')
@@ -213,25 +196,28 @@ class LifTree:
             Build precedence between extra
             renderer > folder
         """
-        extra_sources = dict(files=dict(), loaders=dict())
-        if folder is not None and 'extra' in folder:
-            extra_sources.update(folder['extra'])
-        extra_sources.update(renderer.extra)
+        files = dict()
+        loaders = dict()
+        if folder is not None:
+            files.update(folder.extra_files)
+            loaders.update(folder.extra_loaders)
+        files.update(renderer.extra_files)
+        loaders.update(renderer.extra_loaders)
+        extra_sources = dict(
+            files=files,
+            loaders=loaders
+        )
         return extra_sources
 
     def _get_extra(self, extra_sources, path):
         data = dict()
-        if 'files' in extra_sources:
-            for key, file in extra_sources['files'].items():
-                data[key] = load_yaml_file(file)
-        if 'loaders' in extra_sources:
-            for key, loader_name in extra_sources['loaders'].items():
-                data[key] = self._get_data(loader_name, path)
-
+        for key, file in extra_sources['files'].items():
+            data[key] = load_yaml_file(file)
+        for key, loader_name in extra_sources['loaders'].items():
+            data[key] = self._get_data(loader_name, path)
         return data
 
     def _get_data(self, loader_name, path):
-        self.logger.debug(sys.path)
         loader = importlib.import_module(f'loaders.{loader_name}')
         return loader.get_data(path)
 
@@ -241,14 +227,11 @@ class LifTree:
         self.logger.debug(path)
         for folder in self.liftree_config.folders:
             self.logger.debug(folder)
-            if path.startswith(folder['path']):
-                if 'excludes' in folder:
-                    for exclude in folder['excludes']:
-                        if re.match(exclude, path) is not None:
-                            return None
-                    return folder
-                else:
-                    return folder
+            if path.startswith(folder.path):
+                for exclude in folder.excludes:
+                    if re.match(exclude, path) is not None:
+                        return None
+                return folder
         return None
 
     def _get_renderer(self, path):
@@ -257,6 +240,6 @@ class LifTree:
             if re.match(mapping['path'], path) is not None:
                 renderer_name = mapping['renderer']
                 self.logger.debug(renderer_name)
-                renderer = Renderer(renderer_name, self.liftree_config.renderers)
+                renderer = self.liftree_config.get_renderer(renderer_name)
                 break
         return renderer
