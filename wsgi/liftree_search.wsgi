@@ -13,7 +13,6 @@ def application(environ, start_response):
     try:
         fileConfig('/etc/liftree/logging.conf')
         parameters = parse_qs(environ['QUERY_STRING'])
-
         query = parameters.get('query', [''])[0]
         by_cat = parameters.get('by_cat', ["false"])[0]
         _liftree = LifTree()
