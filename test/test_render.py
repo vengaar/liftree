@@ -27,11 +27,11 @@ class TestRender(unittest.TestCase):
 
         # Valid file
         folder = liftree._is_valid_path(self.test_file_json)
-        self.assertEqual(folder.name, 'liftree')
+        self.assertEqual(folder.name, 'liftree unittest files')
 
         # Valid file but forbidden in mapping
         folder = liftree._is_valid_path(self.test_file_forbidden)
-        self.assertEqual(folder.name, 'liftree')
+        self.assertEqual(folder.name, 'liftree unittest files')
 
         for path in [
             self.test_file_out,
@@ -65,7 +65,7 @@ class TestRender(unittest.TestCase):
         extra_sources = liftree._build_extra(renderer, folder)
         self.assertIsInstance(extra_sources['loaders'], dict)
         self.assertIsInstance(extra_sources['files'], dict)
-        self.assertEqual(extra_sources['loaders']['test'], 'get_test_folder')
+        self.assertEqual(extra_sources['loaders']['test']['name'], 'get_test_folder')
 
         test_file = self.test_file_none
         folder = liftree._is_valid_path(test_file)
@@ -83,7 +83,7 @@ class TestRender(unittest.TestCase):
         extra = LifTree()._get_extra(extra_sources, test_file)
         self.assertEqual(extra['test'], 'I love Liftree')
 
-        renderer._add_extra_loader('test', 'get_test_page')
+        renderer._add_extra_loader('test', dict(name='get_test_page'))
         renderer._add_extra_file('secret', self.test_file_forbidden)
         extra_sources = liftree._build_extra(renderer, folder)
         extra = LifTree()._get_extra(extra_sources, self.test_file_json)
@@ -96,6 +96,7 @@ class TestRender(unittest.TestCase):
         self.assertEqual(status, HTTP_200)
         self.assertEqual(content_type, CONTENT_TYPE_HTML)
         soup = BeautifulSoup(output, 'html.parser')
+        # print(soup.prettify())
         code = soup.find(id='liftree_data')
         text = code.get_text()
         data = yaml.load(text)

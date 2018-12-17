@@ -4,7 +4,7 @@ import pprint
 
 # liftree import
 import liftree_test
-from classes import LifTreeFolder, Renderer
+from classes import LifTreeFolder, LifTreeLoader, Renderer
 
 class TestLiftreeClasses(unittest.TestCase):
 
@@ -20,6 +20,20 @@ class TestLiftreeClasses(unittest.TestCase):
         extra=extra,
     )
 
+    def test_liftree_loader(self):
+
+        loader_desc = {
+            'name': 'file_extract_loader',
+            'params': {
+                'prefix': '### DOC ###',
+                'format': 'yaml'
+            }
+        }
+        loader = LifTreeLoader(**loader_desc)
+        data = loader.get_data('/home/liftree/liftree/setup/playbooks/setup.yml')
+        self.assertEqual(data['author'], 'olivier perriot')
+        self.assertEqual(data['state'], 'dev')
+
     def test_liftree_folder(self):
 
         liftree_folder = LifTreeFolder(name='name', path='path', extra=self.extra)
@@ -31,17 +45,17 @@ class TestLiftreeClasses(unittest.TestCase):
         self.assertEqual(liftree_folder.extra_files['test'], 'test')
         self.assertEqual(liftree_folder.name, 'name')
 
-        liftree_folder2 = LifTreeFolder(self.data_dict)
+        liftree_folder2 = LifTreeFolder(**self.data_dict)
         # print(liftree_folder)
         self.assertEqual(liftree_folder._get_data(), liftree_folder2._get_data())
 
         excludes=['pattern1', 'pattern2']
-        liftree_folder = LifTreeFolder(self.data_dict, excludes=excludes)
+        liftree_folder = LifTreeFolder(**self.data_dict, excludes=excludes)
         # print(liftree_folder)
         self.assertEqual(liftree_folder.excludes, excludes)
 
     def test_renderer(self):
-        renderer = Renderer(self.data_dict, name='name', template='template')
+        renderer = Renderer(name='name', template='template', extra=self.extra)
         # print(renderer)
         self.assertEqual(renderer.name, 'name')
         self.assertEqual(renderer.template, 'template')

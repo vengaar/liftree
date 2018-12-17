@@ -7,7 +7,7 @@ try:
 except ModuleNotFoundError:
     MODULE_GIT_AVAILABLE = False
 
-def get_data(path):
+def get_data(path, params):
 
     if MODULE_GIT_AVAILABLE:
         git_base = '/home/liftree/liftree'
@@ -29,7 +29,6 @@ def get_data(path):
                 diff_lines = difflib.unified_diff(linesa, linesb, fromfile='filea', tofile='fileb', lineterm='')
                 diff = os.linesep.join(diff_lines)
                 status = item.change_type
-
 
         git_info = dict(
             untracked=untracked,
