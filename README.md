@@ -22,5 +22,8 @@ ansible-playbook /home/liftree/liftree/setup/playbooks/setup.yml -v
 Test url:
 
 * http://{your_ip}/info
+* http://{your_ip}/mock
+* http://{your_ip}/mock?query=an
 * http://{your_ip}/search
+* http://{your_ip}/search?query=data/test
 * http://{your_ip}/show

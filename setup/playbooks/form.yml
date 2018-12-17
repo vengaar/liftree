@@ -1,0 +1,32 @@
+---
+
+extra_vars:
+
+  - name: param1
+    description: The description of what the param1 use
+    default: foo
+    check: 'regExp[/^[a-z0-9_-]{4,16}$/]'
+
+  - name: countries
+    description: Countries with 'an' in name
+    search: mock
+    search_params: query=an
+    attributes: ['required', 'multiple']
+    default: France,Espagne
+
+  - name: country
+    description: One country without criteria
+    search: mock
+    default: Inslande
+
+  - name: color
+    description: A choice among a static list
+    choices: ['blue', 'red', 'green']
+    attributes: ['required', 'multiple']
+    default: blue,green
+
+  - name: agree
+    boolean: true
+    description: A toggle true/false
+
+...

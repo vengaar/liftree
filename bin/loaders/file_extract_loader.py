@@ -1,12 +1,14 @@
 import yaml
 
-def get_data(path):
-    "".startswith
+def get_data(path, pattern='### DOC ###', format='yaml'):
     prefix = "### DOC ###"
     with open(path, 'r') as stream:
         data = [
             line[len(prefix):]
             for line in stream
-            if line.startswith(prefix)
+            if line.startswith(pattern)
         ]
-    return yaml.load("".join(data))
+    if format == 'yaml':
+        return yaml.load("".join(data))
+    else:
+        return data

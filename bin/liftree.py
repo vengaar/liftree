@@ -96,7 +96,7 @@ class LifTreeConfig(LifTreeObject):
         ]
         self.folders.extend(folders)
         mappings = config.get('mappings', [])
-        self.mappings = mappings + self.mappings
+        self.mappings += mappings
         templates = os.path.join(config_folder, 'templates')
         self.templates.insert(0, templates)
         default = config.get('defaults', dict())
