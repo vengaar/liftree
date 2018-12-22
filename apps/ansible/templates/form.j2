@@ -83,11 +83,27 @@ function sui_list_to_selected_options(values) {
 
 $('#extra_vars-{{ param.name }}').dropdown({
   apiSettings: {
-    url: '/{{ param.search }}?{{ param.search_params }}',
-    //cache: false
+    url: '{{ param.search }}?{{ param.search_params }}',
+    cache: false
   },
+  clearable: true,
   filterRemoteData: true,
-  values: sui_list_to_selected_options('{{ param.default }}')
+  values: sui_list_to_selected_options('{{ param.default }}'),
+/*
+  onShow : function() {
+  	$(this).children('.menu').children('.item').each(function(a, b){
+    	var value = $(this).attr('data-value');
+      var text = $(this).attr('data-text');
+      var name = $(this).text();
+      console.log(name, value, text)
+      if(name.indexOf('user') >= 0){
+      	$(this).prepend("<i class='user icon'></i>");
+      }else if(name.indexOf('group') >= 0){
+      	$(this).prepend("<i class='users icon'></i>");
+      }
+    });
+  }
+*/  
 });
 
 {% endif %}{% endfor %}
