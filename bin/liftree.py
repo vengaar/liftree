@@ -10,7 +10,7 @@ import glob
 # liftree import
 from constants import *
 from loaders.file_yaml_loader import get_data as load_yaml_file
-from classes import LifTreeObject, LifTreeFolder, Renderer
+from classes import LifTreeObject, LifTreeFolder, LifTreeLoader, Renderer
 
 class LifTreeConfig(LifTreeObject):
 
@@ -39,8 +39,9 @@ class LifTreeConfig(LifTreeObject):
         self.import_path = []
         if generate:
             self._init_from_file(self.root_config_file)
-            for file in glob.glob(self.root_include_pattern):
-                self._logger.debug(f'include={file}')
+            for file in sorted(glob.glob(self.root_include_pattern)):
+                # print(file)
+                self._logger.info(f'include={file}')
                 with open(file, 'r') as stream:
                     config_include = yaml.load(stream)
                 self._import_config(config_include)
@@ -54,7 +55,7 @@ class LifTreeConfig(LifTreeObject):
 
     def get_renderer(self, name):
         renderer_data = self.renderers[name]
-        return Renderer(renderer_data, name=name)
+        return Renderer(name=name, **renderer_data)
 
     def _init_from_file(self, file):
         with open(self.root_config_file, 'r') as stream:
@@ -91,7 +92,7 @@ class LifTreeConfig(LifTreeObject):
         self.renderers.update(renderers)
         folders = config.get('folders', [])
         folders = [
-            LifTreeFolder(data)
+            LifTreeFolder(**data)
             for data in config.get('folders', [])
         ]
         self.folders.extend(folders)
@@ -155,7 +156,7 @@ class LifTree:
             renderer = self._get_renderer(path)
         self.logger.debug(f'renderer={renderer}')
         if renderer.loader is not None:
-            data = self._get_data(renderer.loader, path)
+            data = renderer.loader.get_data(path)
         else:
             data = None
         j2_env = Environment(
@@ -212,14 +213,14 @@ class LifTree:
     def _get_extra(self, extra_sources, path):
         data = dict()
         for key, file in extra_sources['files'].items():
-            data[key] = load_yaml_file(file)
-        for key, loader_name in extra_sources['loaders'].items():
-            data[key] = self._get_data(loader_name, path)
+            data[key] = load_yaml_file(file, None)
+        self.logger.error(extra_sources)
+        for key, loader_desc in extra_sources['loaders'].items():
+            self.logger.error(key)
+            self.logger.error(loader_desc)
+            data[key] = LifTreeLoader(**loader_desc).get_data(path)
+            #data[key] = dict()
         return data
-
-    def _get_data(self, loader_name, path):
-        loader = importlib.import_module(f'loaders.{loader_name}')
-        return loader.get_data(path)
 
     def _is_valid_path(self, path):
         """

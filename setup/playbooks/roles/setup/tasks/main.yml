@@ -22,6 +22,7 @@
       - python3-markdown
       - libselinux-python
       - python3-beautifulsoup4
+      - python3-GitPython
       # - setroubleshoot-server
     state: latest
 
@@ -42,10 +43,18 @@
 
 - name: Deploy liftree example config
   copy:
-    dest: /etc/liftree/conf.d/example.conf
+    dest: /etc/liftree/conf.d/00-example.conf
     content: |
       ---
       name: /home/{{ liftree_user }}/liftree/apps/example
+      ...
+
+- name: Deploy liftree ansible config
+  copy:
+    dest: /etc/liftree/conf.d/50-ansible.conf
+    content: |
+      ---
+      name: /home/{{ liftree_user }}/liftree/apps/ansible
       ...
 
 - name: Update permission to allow apache reach wsgi

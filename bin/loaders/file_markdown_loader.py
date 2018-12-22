@@ -1,6 +1,6 @@
 import markdown
 
-def get_data(path):
+def get_data(path, params):
     extensions = ['extra', 'smarty']
     with open(path, 'r') as stream:
         md = stream.read()

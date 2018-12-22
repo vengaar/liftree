@@ -1,0 +1,50 @@
+---
+
+extra_vars:
+
+  - name: param1
+    description: The description of what the param1 use
+    default: foo
+    check: 'regExp[/^[a-z0-9_-]{4,16}$/]'
+
+  - name: tags
+    description: Tags to apply (/home/liftree/ansible-ws/test/data/playbooks/tags.yml)
+    search: http://192.168.1.18:8081/playbook_tags
+    search_params: "playbook=/home/liftree/ansible-ws/test/data/playbooks/tags.yml"
+    attributes: ['required', 'multiple']
+
+  - name: server_app1
+    description: One server for app1
+    search: http://192.168.1.18:8081/ansible_hosts
+    search_params: "groups=.*app1"
+    attributes: ['required']
+
+  - name: server_prod
+    description: Prod servers
+    search: http://192.168.1.18:8081/ansible_hosts
+    search_params: "groups=.*prod"
+    attributes: ['required', 'multiple']
+
+  - name: countries
+    description: Countries with 'an' in name
+    search: /mock
+    search_params: ""
+    attributes: ['required', 'multiple']
+    default: France,Espagne
+
+  - name: country
+    description: One country without criteria
+    search: mock
+    default: Inslande
+
+  - name: color
+    description: A choice among a static list
+    choices: ['blue', 'red', 'green']
+    attributes: ['required', 'multiple']
+    default: blue,green
+
+  - name: agree
+    boolean: true
+    description: A toggle true/false
+
+...
