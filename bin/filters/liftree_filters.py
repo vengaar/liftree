@@ -13,7 +13,6 @@ def filter_to_markdown(value):
 def filter_basename(path):
      return os.path.basename(path)
 
-
 def filter_flat(default, sep=','):
     if default is None:
         return ''
@@ -33,3 +32,12 @@ def filter_to_sui_options(value, selected=False):
     else:
         selected_options = [dict(name=value, value=value, selected=selected)]
     return json.dumps(selected_options)
+
+def filter_get(my_list, value, default=''):
+    """
+      Return value if present in list 
+    """
+    if my_list is None:
+        return default
+    else:
+        return value if value in my_list else default

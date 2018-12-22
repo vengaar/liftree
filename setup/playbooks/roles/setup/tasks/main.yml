@@ -49,14 +49,6 @@
       name: /home/{{ liftree_user }}/liftree/apps/example
       ...
 
-- name: Deploy liftree ansible config
-  copy:
-    dest: /etc/liftree/conf.d/50-ansible.conf
-    content: |
-      ---
-      name: /home/{{ liftree_user }}/liftree/apps/ansible
-      ...
-
 - name: Update permission to allow apache reach wsgi
   file:
     path: /home/{{ liftree_user }}
@@ -103,3 +95,5 @@
     name: httpd
     state: reloaded
     enabled: yes
+
+...
