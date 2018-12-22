@@ -166,6 +166,7 @@ class LifTree:
         # Add custom filters
         dir_path = os.path.dirname(os.path.realpath(__file__))
         dir_filters = os.path.join(dir_path, 'filters')
+        filters = []
         for file in os.listdir(dir_filters):
             result = re.search('^(?P<module_name>.*).py$', file)
             if result is not None:
@@ -176,6 +177,7 @@ class LifTree:
                     filter_prefix = 'filter_'
                     if name.startswith(filter_prefix):
                         filter_name = name[len(filter_prefix):]
+                        filters.append(filter_name)
                         j2_env.filters[filter_name] = function
 
         template = j2_env.get_template(renderer.template)
@@ -183,7 +185,8 @@ class LifTree:
             path = path,
             folder = folder,
             renderer = renderer._get_data(),
-            config = self.liftree_config._get_data()
+            config = self.liftree_config._get_data(),
+            filters = filters
         )
         extra_sources = self._build_extra(renderer, folder)
         extra = self._get_extra(extra_sources, path)
