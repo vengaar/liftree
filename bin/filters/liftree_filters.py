@@ -6,6 +6,9 @@ import markdown
 def filter_to_yaml(input):
     return yaml.dump(input, default_flow_style=False)
 
+def filter_to_json(value):
+    return json.dumps(value)
+
 def filter_to_markdown(value):
     extensions = ['extra', 'smarty']
     return markdown.markdown(value, extensions=extensions, output_format='html5')
