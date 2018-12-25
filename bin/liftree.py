@@ -163,22 +163,25 @@ class LifTree:
             loader=FileSystemLoader(self.liftree_config.templates),
             trim_blocks=True
         )
+
         # Add custom filters
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        dir_filters = os.path.join(dir_path, 'filters')
         filters = []
-        for file in os.listdir(dir_filters):
-            result = re.search('^(?P<module_name>.*).py$', file)
-            if result is not None:
-                module_name = result.group('module_name')
-                module_filter = importlib.import_module(f'filters.{module_name}')
-                for tuple_function in inspect.getmembers(module_filter, predicate=inspect.isfunction):
-                    (name, function) = tuple_function
-                    filter_prefix = 'filter_'
-                    if name.startswith(filter_prefix):
-                        filter_name = name[len(filter_prefix):]
-                        filters.append(filter_name)
-                        j2_env.filters[filter_name] = function
+        import_dirs = [os.path.dirname(os.path.realpath(__file__))] + self.liftree_config.import_path
+        for import_dir in import_dirs:
+            filter_dir = os.path.join(import_dir, 'filters')
+            if os.path.isdir(filter_dir):
+                for file in os.listdir(filter_dir):
+                    result = re.search('^(?P<module_name>.*).py$', file)
+                    if result is not None:
+                        module_name = result.group('module_name')
+                        module_filter = importlib.import_module(f'filters.{module_name}')
+                        for tuple_function in inspect.getmembers(module_filter, predicate=inspect.isfunction):
+                            (name, function) = tuple_function
+                            filter_prefix = 'filter_'
+                            if name.startswith(filter_prefix):
+                                filter_name = name[len(filter_prefix):]
+                                filters.append(filter_name)
+                                j2_env.filters[filter_name] = function
 
         template = j2_env.get_template(renderer.template)
         meta = dict(
