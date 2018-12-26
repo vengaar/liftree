@@ -11,10 +11,7 @@ fedora 29
 As root on your server
 
 ~~~~
-useradd liftree
-su - liftree
 git clone https://github.com/vengaar/liftree.git
-exit
 ansible-playbook /home/liftree/liftree/setup/playbooks/setup.yml -v
 ~~~~
 

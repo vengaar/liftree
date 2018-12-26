@@ -1,9 +1,8 @@
 ---
-
+repo_name: liftree
+git_repo: "https://github.com/vengaar/{{ repo_name }}.git"
+git_update: true
 liftree_user: liftree
 liftree_logfile: /home/{{ liftree_user }}/liftree.log
-
-# Caution use another port can apply to update firewalld config
-# liftree_port: 80
 
 ...
