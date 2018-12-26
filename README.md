@@ -11,10 +11,8 @@ fedora 29
 As root on your server
 
 ~~~~
-useradd liftree
-su - liftree
+dnf install ansible
 git clone https://github.com/vengaar/liftree.git
-exit
 ansible-playbook /home/liftree/liftree/setup/playbooks/setup.yml -v
 ~~~~
 

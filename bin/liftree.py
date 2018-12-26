@@ -189,7 +189,8 @@ class LifTree:
             folder = folder,
             renderer = renderer._get_data(),
             config = self.liftree_config._get_data(),
-            filters = filters
+            filters = filters,
+            self = id(self)
         )
         extra_sources = self._build_extra(renderer, folder)
         extra = self._get_extra(extra_sources, path)
