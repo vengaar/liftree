@@ -8,6 +8,9 @@ from liftree import *
 from constants import *
 from utils import format_search_results_for_sui
 
+# Share liftre across requests
+_liftree = LifTree()
+
 def application(environ, start_response):
 
     try:
@@ -15,7 +18,6 @@ def application(environ, start_response):
         parameters = parse_qs(environ['QUERY_STRING'])
         query = parameters.get('query', [''])[0]
         by_cat = parameters.get('by_cat', ["false"])[0]
-        _liftree = LifTree()
         raw_results = _liftree.search(query)
         format = parameters.get('format', ["raw"])[0]
         # search_formats = ('sui', 'raw')
