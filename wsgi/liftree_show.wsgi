@@ -8,7 +8,7 @@ from constants import *
 from utils import get_first_parameter
 
 # Share liftre across requests
-_liftree = LifTree()
+#_liftree = LifTree()
 
 def application(environ, start_response):
 
@@ -16,6 +16,7 @@ def application(environ, start_response):
         fileConfig('/etc/liftree/logging.conf')
         parameters = parse_qs(environ['QUERY_STRING'])
         path = get_first_parameter('path', parameters)
+        _liftree = LifTree()
         status, content_type, output = _liftree.render(path)
     except:
         status = HTTP_500
