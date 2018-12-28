@@ -1,8 +1,7 @@
 ---
-repo_name: liftree
-git_repo: "https://github.com/vengaar/{{ repo_name }}.git"
-git_update: true
+git_name: liftree
+git_repo: "https://github.com/vengaar/{{ git_name }}.git"
+git_clone: false
 liftree_user: liftree
 liftree_logfile: /home/{{ liftree_user }}/liftree.log
-
 ...
