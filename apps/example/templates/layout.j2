@@ -10,27 +10,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.10.0/github-markdown.min.css">
     <style>
       .main.container {
-        margin-top: 7em;
+        margin-top: 6em;
       }
     </style>
   {% endblock %}
   </head>
   <body>
     <div class="ui fixed inverted main menu">
-      <a class="item" href="/show"><i class="leaf icon"></i>Home</a>
-
+      <a class="item" href="https://github.com/vengaar/liftree">
+        <i class="github icon"></i>liftree
+      </a>
       <div class="ui dropdown item">
         Show test files
         <i class="dropdown icon"></i>
         <div class="menu">
-          <a class="item" href="/show?path=/home/liftree/liftree/test/data/test.yaml">Yaml test file</a>
-          <a class="item" href="/show?path=/home/liftree/liftree/test/data/test.json">Json test file</a>
-          <a class="item" href="/show?path=/home/liftree/liftree/test/data/test.text">Text test file</a>
-          <a class="item" href="/show?path=/home/liftree/liftree/test/data/test.md">Markdown test file</a>
-          <a class="item" href="/show?path=/home/liftree/liftree/test/data/test.secret">Forbidden test file</a>
+{% for file in extra.test_files %}
+          <a class="item" href="/show?path={{ file }}">{{ file.split('/')[-1] }}</a>
+{% endfor %}
         </div>
       </div>
-
       <div class="right menu">
         <div class="ui right aligned category search item">
           <div class="ui _transparent icon input">

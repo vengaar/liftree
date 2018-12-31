@@ -1,9 +1,0 @@
-{
-  "files": {
-    "forbidden": ["/home/liftree/liftree/test/data/test.secret"],
-    "json": ["/home/liftree/liftree/test/data/test.json"],
-    "markdown": ["/home/liftree/liftree/test/data/test.md"],
-    "raw": ["/home/liftree/liftree/test/data/test.text"],
-    "yaml": ["/home/liftree/liftree/test/data/test.yaml"]
-  }
-}

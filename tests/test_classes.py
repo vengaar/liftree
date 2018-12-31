@@ -1,10 +1,12 @@
-import logging
-import unittest
-import pprint
+import unittest, pprint
+import os
 
 # liftree import
-import liftree_test
-from classes import LifTreeFolder, LifTreeLoader, Renderer
+import sys
+sys.path.append('.')
+import liftree
+from liftree.classes import LifTreeFolder, LifTreeLoader, Renderer
+import tests as liftree_tests
 
 class TestLiftreeClasses(unittest.TestCase):
 
@@ -21,7 +23,6 @@ class TestLiftreeClasses(unittest.TestCase):
     )
 
     def test_liftree_loader(self):
-
         loader_desc = {
             'name': 'file_extract_loader',
             'params': {
@@ -30,9 +31,11 @@ class TestLiftreeClasses(unittest.TestCase):
             }
         }
         loader = LifTreeLoader(**loader_desc)
-        data = loader.get_data('/home/liftree/liftree/setup/playbooks/setup.yml')
-        self.assertEqual(data['author'], 'olivier perriot')
-        self.assertEqual(data['state'], 'dev')
+        test_file = os.path.join(liftree_tests.LIFTREE_PATH_TEST, 'data', 'test.yaml')
+        data = loader.get_data(test_file)
+        # pprint.pprint(data)
+        self.assertEqual(data['source'], 'wikipedia')
+        self.assertEqual(data['url'], 'https://fr.wikipedia.org/wiki/YAML')
 
     def test_liftree_folder(self):
 
@@ -63,5 +66,6 @@ class TestLiftreeClasses(unittest.TestCase):
         self.assertEqual(renderer.extra_loaders, dict())
 
 if __name__ == '__main__':
+    import logging
     logging.basicConfig(level=logging.INFO)
     unittest.main()
