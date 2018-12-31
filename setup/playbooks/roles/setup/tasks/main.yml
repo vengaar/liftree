@@ -99,11 +99,12 @@
         url: http://localhost/show
         return_content: true
       register: register_final_test
+    - debug: var=register_final_test
     - name: Check final test
       assert:
         that:
           - register_final_test.status == 200
-#           - register_final_test.content == 200
+          - register_final_test.content is search("<!-- unittest -->")
     - name: Display test url
       debug: msg="Go on http://{{ ansible_default_ipv4.address }}/show to test"
 ...
