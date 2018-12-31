@@ -2,7 +2,7 @@ import sys, os
 import logging
 import importlib
 
-from .constants import CONTENT_TYPE_HTML
+import liftree
 
 class LifTreeObject:
 
@@ -67,4 +67,4 @@ class Renderer(LifTreeExtra):
         else:
             self.loader = None
         self.template = kwargs.get('template')
-        self.content_type = kwargs.get('content_type', CONTENT_TYPE_HTML)
+        self.content_type = kwargs.get('content_type', liftree.CONTENT_TYPE_HTML)
