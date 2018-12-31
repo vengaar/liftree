@@ -94,6 +94,16 @@
         name: httpd
         state: reloaded
         enabled: yes
+    - name: Final test
+      uri:
+        url: http://localhost/show
+        return_content: true
+      register: register_final_test
+    - name: Check final test
+      assert:
+        that:
+          - register_final_test.status == 200
+#           - register_final_test.content == 200
     - name: Display test url
       debug: msg="Go on http://{{ ansible_default_ipv4.address }}/show to test"
 ...

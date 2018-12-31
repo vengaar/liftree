@@ -3,9 +3,9 @@ from cgi import parse_qs
 from logging.config import fileConfig
 
 # liftree import
-from liftree import *
-from constants import *
-from utils import get_first_parameter
+import liftree
+from liftree import LifTree
+from liftree.utils import get_first_parameter
 
 # Share liftre across requests
 #_liftree = LifTree()
@@ -19,8 +19,8 @@ def application(environ, start_response):
         _liftree = LifTree()
         status, content_type, output = _liftree.render(path)
     except:
-        status = HTTP_500
-        content_type = CONTENT_TYPE_TEXT
+        status = liftree.HTTP_500
+        content_type = liftree.CONTENT_TYPE_TEXT
         trace = traceback.format_exc()
         output = trace.encode('utf-8')
 

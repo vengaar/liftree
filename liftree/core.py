@@ -8,9 +8,9 @@ import sys, os, grp, stat
 import glob
 
 # liftree import
-from constants import *
-from loaders.file_yaml_loader import get_data as load_yaml_file
-from classes import LifTreeObject, LifTreeFolder, LifTreeLoader, Renderer
+from .constants import *
+from .loaders.file_yaml_loader import get_data as load_yaml_file
+from .classes import LifTreeObject, LifTreeFolder, LifTreeLoader, Renderer
 
 class LifTreeConfig(LifTreeObject):
 
@@ -36,7 +36,8 @@ class LifTreeConfig(LifTreeObject):
         self._logger.debug(f'generate_config={generate_config}')
         self._logger.debug(f'generated_config_exist={generated_config_exist}')
         self._logger.debug(f'generate={generate}')
-        self.import_path = []
+        # liftree path for core loaders and filers
+        self.import_path = [os.path.dirname(os.path.realpath(__file__))]
         if generate:
             self._init_from_file(self.root_config_file)
             for file in sorted(glob.glob(self.root_include_pattern)):
@@ -47,7 +48,9 @@ class LifTreeConfig(LifTreeObject):
                 self._import_config(config_include)
             # self._write()
 
-        sys.path = sys.path + self.import_path
+        for lib_path in self.import_path:
+            if lib_path not in sys.path:
+                sys.path.append(lib_path)
 
         self._logger.debug(f'folders={self.folders}')
         self._logger.debug(f'templates={self.templates}')
@@ -80,11 +83,7 @@ class LifTreeConfig(LifTreeObject):
         self._logger.debug(config_include)
         config_folder = config_include['name']
         config_file = os.path.join(config_folder, 'liftree.conf')
-
         self.import_path.append(os.path.join(config_folder))
-        # self.import_path.append(os.path.join(config_folder, 'loaders'))
-        # self.import_path.append(os.path.join(config_folder, 'filters'))
-
         self._logger.debug(config_file)
         with open(config_file, 'r') as stream:
             config = yaml.load(stream)
@@ -167,6 +166,8 @@ class LifTree:
         # Add custom filters
         filters = []
         import_dirs = [os.path.dirname(os.path.realpath(__file__))] + self.liftree_config.import_path
+        import pprint
+        # pprint.pprint(import_dirs)
         for import_dir in import_dirs:
             filter_dir = os.path.join(import_dir, 'filters')
             if os.path.isdir(filter_dir):
@@ -221,10 +222,10 @@ class LifTree:
         data = dict()
         for key, file in extra_sources['files'].items():
             data[key] = load_yaml_file(file, None)
-        self.logger.error(extra_sources)
+        self.logger.debug(extra_sources)
         for key, loader_desc in extra_sources['loaders'].items():
-            self.logger.error(key)
-            self.logger.error(loader_desc)
+            self.logger.debug(key)
+            self.logger.debug(loader_desc)
             data[key] = LifTreeLoader(**loader_desc).get_data(path)
             #data[key] = dict()
         return data

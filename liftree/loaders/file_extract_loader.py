@@ -11,6 +11,7 @@ def get_data(path, params):
             if line.startswith(prefix)
         ]
     data = "".join(lines)
+    # print(data)
     if format == 'yaml':
         return yaml.load("".join(data))
     else:

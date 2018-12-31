@@ -1,6 +1,8 @@
+import sys, os
 import logging
 import importlib
-from constants import CONTENT_TYPE_HTML
+
+from .constants import CONTENT_TYPE_HTML
 
 class LifTreeObject:
 
@@ -22,8 +24,12 @@ class LifTreeLoader(LifTreeObject):
         super().__init__(**kwargs)
         self.name = kwargs.get('name')
         self.params = kwargs.get('params', dict())
+        liftree_path = os.path.dirname(os.path.realpath(__file__))
+        if liftree_path not in sys.path:
+            sys.path.append(liftree_path)
 
     def get_data(self, path):
+        # print(sys.path)
         loader = importlib.import_module(f'loaders.{self.name}')
         return loader.get_data(path, self.params)
 
