@@ -104,7 +104,7 @@
         url: http://localhost/show
         return_content: true
       register: register_final_test
-    - debug: var=register_final_test
+#     - debug: var=register_final_test
     - name: Check final test
       assert:
         that:
