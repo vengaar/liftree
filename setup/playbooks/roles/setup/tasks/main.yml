@@ -19,6 +19,11 @@
       dest: /home/{{ liftree_user }}/{{ git_name }}
       force: yes 
 
+- name: Deploy liftree.conf for example
+  template:
+    src: example_liftree.conf
+    dest: /home/{{ liftree_user }}/liftree/apps/example/liftree.conf
+
 - name: Configure
   become: true
   become_user: root
