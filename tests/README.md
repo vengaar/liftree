@@ -3,10 +3,10 @@
 # unittest
 
 ## All unittest
-python3 -m unittest discover -s test/
+python3 -m unittest discover -s tests/
 
 ## One test with debug
-python3 test/test_render.py
+python3 tests/test_render.py
 
 
 <!-- unittest -->

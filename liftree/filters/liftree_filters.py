@@ -32,8 +32,12 @@ def filter_timestamp2date(timestamp, format='%Y-%m-%d %H:%M:%S'):
         date = UNKNOW
     return date
 
-def filter_to_yaml(input):
-    return yaml.dump(input, default_flow_style=False)
+def filter_to_yaml(value):
+    try:
+      result = yaml.dump(value, default_flow_style=False)
+    except:
+      result = value
+    return result
 
 def filter_to_json(value):
     return json.dumps(value)
