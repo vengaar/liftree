@@ -1,5 +1,5 @@
 ---
-- debug: var=liftree_user
+- debug: var=wsgi_user
 - debug: var=git_clone
 - debug: var=git_version
 
@@ -11,22 +11,22 @@
     become: true
     become_user: root
     user:
-      name: "{{ liftree_user }}"
+      name: "{{ wsgi_user }}"
       comment: Liftree applicatif user
 
   - name: Clone git repo on user home
     become: true
-    become_user: "{{ liftree_user }}"
+    become_user: "{{ wsgi_user }}"
     git:
       repo: "{{ git_repo }}"
-      dest: /home/{{ liftree_user }}/{{ git_name }}
+      dest: /home/{{ wsgi_user }}/{{ git_name }}
       version: "{{ git_version }}"
       force: yes 
 
 - name: Deploy liftree.conf for example
   template:
     src: example_liftree.conf
-    dest: /home/{{ liftree_user }}/liftree/apps/example/liftree.conf
+    dest: /home/{{ wsgi_user }}/liftree/apps/example/liftree.conf
 
 - name: Configure
   become: true
@@ -66,11 +66,11 @@
         dest: /etc/liftree/conf.d/00-example.conf
         content: |
           ---
-          name: /home/{{ liftree_user }}/liftree/apps/example
+          name: /home/{{ wsgi_user }}/liftree/apps/example
           ...
     - name: Update permission to allow apache reach wsgi
       file:
-        path: /home/{{ liftree_user }}
+        path: /home/{{ wsgi_user }}
         state: directory
         mode: 0755
 
@@ -95,8 +95,8 @@
           file:
             path: "{{ liftree_logfile }}"
             state: touch
-            owner: "{{ liftree_user }}"
-            group: "{{ liftree_user }}"
+            owner: "{{ wsgi_user }}"
+            group: "{{ wsgi_user }}"
         - name: Set context for log file
           sefcontext:
             target: "{{ liftree_logfile }}"
