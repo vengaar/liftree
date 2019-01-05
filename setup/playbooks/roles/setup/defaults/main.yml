@@ -3,7 +3,6 @@ git_name: liftree
 git_repo: "https://github.com/vengaar/{{ git_name }}.git"
 git_clone: false
 git_version: HEAD
-liftree_user: liftree
 wsgi_user: liftree
-liftree_logfile: /home/{{ liftree_user }}/liftree.log
+liftree_logfile: /home/{{ wsgi_user }}/liftree.log
 ...
