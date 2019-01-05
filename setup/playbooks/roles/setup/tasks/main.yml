@@ -1,22 +1,26 @@
 ---
 - debug: var=liftree_user
 - debug: var=git_clone
+- debug: var=git_version
 
 - name: Deploy from git
   when: git_clone
   block:
+
   - name: Create user
     become: true
     become_user: root
     user:
       name: "{{ liftree_user }}"
       comment: Liftree applicatif user
+
   - name: Clone git repo on user home
     become: true
     become_user: "{{ liftree_user }}"
     git:
       repo: "{{ git_repo }}"
       dest: /home/{{ liftree_user }}/{{ git_name }}
+      version: "{{ git_version }}"
       force: yes 
 
 - name: Deploy liftree.conf for example
@@ -28,6 +32,7 @@
   become: true
   become_user: root
   block:
+
     - name: Install dependencies
       dnf:
         name:
@@ -40,18 +45,22 @@
           - python3-beautifulsoup4
           - python3-GitPython
         state: latest
+
     - name: Create config directory
       file:
         path: /etc/liftree/conf.d/
         state: directory
+
     - name: Deploy logging configuration
       template:
         src: logging.conf
         dest: /etc/liftree/logging.conf
+
     - name: Deploy liftree entry point configuration
       template:
         src: liftree.conf
         dest: /etc/liftree/liftree.conf
+
     - name: Deploy liftree example config
       copy:
         dest: /etc/liftree/conf.d/00-example.conf
@@ -64,10 +73,12 @@
         path: /home/{{ liftree_user }}
         state: directory
         mode: 0755
+
     - name: Deploy apache configuration
       template:
         src: httpd.conf
         dest: /etc/httpd/conf.d/liftree.conf
+
     - name: Get selinux state
       command: getenforce
       register: getenforce
@@ -99,17 +110,21 @@
         name: httpd
         state: reloaded
         enabled: yes
+
     - name: Final test
       uri:
         url: http://localhost/show
         return_content: true
       register: register_final_test
+
 #     - debug: var=register_final_test
+
     - name: Check final test
       assert:
         that:
           - register_final_test.status == 200
           - register_final_test.content is search("<!-- unittest -->")
+
     - name: Display test url
       debug: msg="Go on http://{{ ansible_default_ipv4.address }}/show to test"
 ...

@@ -1,6 +1,7 @@
 import os
 import pprint
 import difflib
+import logging
 try:
     import git
     MODULE_GIT_AVAILABLE = True
@@ -8,9 +9,11 @@ except ModuleNotFoundError:
     MODULE_GIT_AVAILABLE = False
 
 def get_data(path, params):
-
+    """
+    """
+    logger = logging.getLogger('LOADER_get_git_info')
     if MODULE_GIT_AVAILABLE:
-        git_base = '/home/liftree/liftree'
+        git_base = params['repo']
         path_rel = os.path.relpath(path, start=git_base)
         repo = git.Repo(git_base)
         untracked = path_rel in repo.untracked_files
@@ -42,8 +45,3 @@ Python git module missing
 Try dnf install python3-GitPython
 '''
 
-if __name__ == '__main__':
-    import logging
-    logging.basicConfig(level=logging.INFO)
-    data = get_data('/home/liftree/liftree/setup/playbooks/test.yml')
-    print(data)

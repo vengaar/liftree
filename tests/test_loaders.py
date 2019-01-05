@@ -27,6 +27,7 @@ class TestLiftreeLoaders(unittest.TestCase):
         pprint.pprint(data)
         self.assertEqual(data['status'], 'M')
         self.assertFalse(data['untracked'])
+        os.system(f'git checkout {path}')
 
         path =f'{liftree_tests.LIFTREE_PATH_TEST}/data/test.unittest'
         print(path)

@@ -5,7 +5,8 @@ SWGI application to browse text files and display them via jinja2 templates
 
 ## Prerequisite
 
-fedora 29
+python => 3.6
+fedora => 28
 
 ## Procedure
 As root on your server
@@ -25,4 +26,3 @@ Test url:
 * http://{your_ip}/search
 * http://{your_ip}/search?query=data/test
 * http://{your_ip}/show
-
