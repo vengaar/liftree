@@ -11,6 +11,16 @@ fedora => 28
 ## Procedure
 As root on your server
 
+on fedora 28
+
+~~~~
+dnf install ansible-python3
+git clone https://github.com/vengaar/liftree.git
+ansible-playbook-3 /home/liftree/liftree/setup/playbooks/setup.yml -v
+~~~~
+
+on fedora 29
+
 ~~~~
 dnf install ansible
 git clone https://github.com/vengaar/liftree.git
