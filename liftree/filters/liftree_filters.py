@@ -2,9 +2,42 @@ import yaml
 import json
 import os
 import markdown
+import datetime
 
-def filter_to_yaml(input):
-    return yaml.dump(input, default_flow_style=False)
+UNKNOW = '?'
+
+def filter_liftree_link(path):
+    return f'<a href="/show?path={path}">{path}</a>'
+
+def filter_timestamp_delta(begin, end):
+    try:
+        seconds = int(end-begin)
+        date = str(datetime.timedelta(seconds=seconds))
+    except:
+        date = UNKNOW
+    return date
+
+def filter_seconds2duration(seconds):
+    try:
+        date = str(datetime.timedelta(seconds=int(seconds)))
+    except:
+        date = UNKNOW
+    return date
+
+def filter_timestamp2date(timestamp, format='%Y-%m-%d %H:%M:%S'):
+    try:
+        ts = int(timestamp)
+        date = datetime.datetime.utcfromtimestamp(ts).strftime(format)
+    except:
+        date = UNKNOW
+    return date
+
+def filter_to_yaml(value):
+    try:
+      result = yaml.dump(value, default_flow_style=False)
+    except:
+      result = value
+    return result
 
 def filter_to_json(value):
     return json.dumps(value)

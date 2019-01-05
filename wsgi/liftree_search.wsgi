@@ -4,9 +4,9 @@ import json
 from logging.config import fileConfig
 
 # liftree import
-from liftree import *
-from constants import *
-from utils import format_search_results_for_sui
+import liftree
+from liftree import LifTree
+from liftree.utils import format_search_results_for_sui
 
 # Share liftre across requests
 #_liftree = LifTree()
@@ -27,13 +27,13 @@ def application(environ, start_response):
             output = dict(results=formatted_results)
         else:
             output = raw_results
-        status = HTTP_200
-        content_type = CONTENT_TYPE_JSON
+        status = liftree.HTTP_200
+        content_type = liftree.CONTENT_TYPE_JSON
         output = json.dumps(output)
         output = output.encode('utf-8')
     except:
-        status = HTTP_500
-        content_type = CONTENT_TYPE_TEXT
+        status = liftree.HTTP_500
+        content_type = liftree.CONTENT_TYPE_TEXT
         trace = traceback.format_exc()
         output = trace.encode('utf-8')
 
