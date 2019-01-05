@@ -90,10 +90,6 @@ class LifTreeConfig(LifTreeObject):
         renderers = config.get('renderers', dict())
         self.renderers.update(renderers)
         folders = config.get('folders', [])
-        folders = [
-            LifTreeFolder(**data)
-            for data in config.get('folders', [])
-        ]
         self.folders.extend(folders)
         mappings = config.get('mappings', [])
         self.mappings = mappings + self.mappings
@@ -105,16 +101,20 @@ class LifTreeConfig(LifTreeObject):
 class LifTree:
 
     def __init__(self):
-        self.liftree_config = LifTreeConfig()
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.liftree_config = LifTreeConfig()
         self.logger.debug(self.liftree_config)
+        self.folders = [
+            LifTreeFolder(**data)
+            for data in self.liftree_config.folders
+        ]
 
     def search(self, query):
         pattern = query.replace(' ', '.*')
         re_pattern = re.compile(f'.*{pattern}.*')
         result_files = []
         result_folders = []
-        for folder in self.liftree_config.folders:
+        for folder in self.folders:
             root_dir = folder.path
             result_folders.append(root_dir)
             for root, dirs, files in os.walk(root_dir):
@@ -165,9 +165,8 @@ class LifTree:
 
         # Add custom filters
         filters = []
-        import_dirs = [os.path.dirname(os.path.realpath(__file__))] + self.liftree_config.import_path
-        import pprint
-        # pprint.pprint(import_dirs)
+        import_dirs = self.liftree_config.import_path
+        self.logger.debug(import_dirs)                    
         for import_dir in import_dirs:
             filter_dir = os.path.join(import_dir, 'filters')
             if os.path.isdir(filter_dir):
@@ -234,7 +233,7 @@ class LifTree:
         """
         """
         self.logger.debug(path)
-        for folder in self.liftree_config.folders:
+        for folder in self.folders:
             self.logger.debug(folder)
             if path.startswith(folder.path):
                 for exclude in folder.excludes:
