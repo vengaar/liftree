@@ -11,7 +11,7 @@ class LifTreeObject:
 
     def _get_data(self):
         return dict(
-            (key, value)
+            (key, value._get_data() if issubclass(type(value), LifTreeObject) else value)
             for key, value in self.__dict__.items()
             if not key.startswith('_')
         )
@@ -68,3 +68,4 @@ class Renderer(LifTreeExtra):
             self.loader = None
         self.template = kwargs.get('template')
         self.content_type = kwargs.get('content_type', liftree.CONTENT_TYPE_HTML)
+

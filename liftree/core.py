@@ -186,7 +186,7 @@ class LifTree:
         template = j2_env.get_template(renderer.template)
         meta = dict(
             path = path,
-            folder = folder,
+            folder = folder._get_data(),
             renderer = renderer._get_data(),
             config = self.liftree_config._get_data(),
             filters = filters,
