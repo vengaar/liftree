@@ -10,7 +10,7 @@ import glob
 # liftree import
 from .constants import *
 from .loaders.file_yaml_loader import get_data as load_yaml_file
-from .classes import LifTreeObject, LifTreeFolder, LifTreeLoader, Renderer
+from .classes import LifTreeObject, LifTreeFolder, LifTreeLoader, LifTreeRenderer
 
 class LifTreeConfig(LifTreeObject):
 
@@ -58,7 +58,7 @@ class LifTreeConfig(LifTreeObject):
 
     def get_renderer(self, name):
         renderer_data = self.renderers[name]
-        return Renderer(name=name, **renderer_data)
+        return LifTreeRenderer(name=name, **renderer_data)
 
     def _init_from_file(self, file):
         with open(self.root_config_file, 'r') as stream:

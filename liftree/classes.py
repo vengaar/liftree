@@ -56,7 +56,7 @@ class LifTreeFolder(LifTreeExtra):
         self.path = kwargs['path']
         self.excludes = kwargs.get('excludes', [])
 
-class Renderer(LifTreeExtra):
+class LifTreeRenderer(LifTreeExtra):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if 'loader' in kwargs:
