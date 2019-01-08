@@ -6,6 +6,7 @@ import logging, logging.config
 import importlib, inspect
 import sys, os, grp, stat
 import glob
+from typing import Dict #, Tuple, Sequence
 
 # liftree import
 from .constants import *
@@ -56,7 +57,7 @@ class LifTreeConfig(LifTreeObject):
         self._logger.debug(f'templates={self.templates}')
         self._logger.debug(f'mappings={self.mappings}')
 
-    def get_renderer(self, name):
+    def get_renderer(self, name: str) -> LifTreeRenderer:
         renderer_data = self.renderers[name]
         return LifTreeRenderer(name=name, **renderer_data)
 
@@ -109,7 +110,7 @@ class LifTree:
             for data in self.liftree_config.folders
         ]
 
-    def search(self, query):
+    def search(self, query: str) -> Dict:
         pattern = query.replace(' ', '.*')
         re_pattern = re.compile(f'.*{pattern}.*')
         result_files = []
@@ -146,7 +147,7 @@ class LifTree:
         results = dict(files=valids_files)
         return results
 
-    def render(self, path):
+    def render(self, path: str):
         path = self.liftree_config.defaults['path'] if path is None else path
         folder = self._is_valid_path(path)
         if folder is None:
@@ -199,7 +200,7 @@ class LifTree:
         content_type = CONTENT_TYPE_HTML
         return(status, content_type, output.encode('utf-8'))
 
-    def _build_extra(self, renderer, folder):
+    def _build_extra(self, renderer: LifTreeRenderer, folder: LifTreeFolder) -> Dict:
         """
             Build precedence between extra
             renderer > folder
@@ -217,7 +218,7 @@ class LifTree:
         )
         return extra_sources
 
-    def _get_extra(self, extra_sources, path):
+    def _get_extra(self, extra_sources: Dict, path: str) -> Dict:
         data = dict()
         for key, file in extra_sources['files'].items():
             data[key] = load_yaml_file(file, None)
@@ -226,10 +227,9 @@ class LifTree:
             self.logger.debug(key)
             self.logger.debug(loader_desc)
             data[key] = LifTreeLoader(**loader_desc).get_data(path)
-            #data[key] = dict()
         return data
 
-    def _is_valid_path(self, path):
+    def _is_valid_path(self, path) -> LifTreeFolder:
         """
         """
         self.logger.debug(path)
@@ -242,7 +242,7 @@ class LifTree:
                 return folder
         return None
 
-    def _get_renderer(self, path):
+    def _get_renderer(self, path: str) -> LifTreeRenderer:
         for mapping in self.liftree_config.mappings:
             self.logger.debug(mapping)
             if re.match(mapping['path'], path) is not None:
