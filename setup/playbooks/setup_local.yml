@@ -10,5 +10,5 @@
   roles:
     - role: setup
       git_clone: false
-      liftree_user: "{{ ansible_user_id }}"
+      wsgi_user: "{{ ansible_user_id }}"
 ...
