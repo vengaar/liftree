@@ -116,35 +116,36 @@ class LifTree:
         result_files = []
         result_folders = []
         for folder in self.folders:
-            root_dir = folder.path
-            result_folders.append(root_dir)
-            for root, dirs, files in os.walk(root_dir):
-                fullpath_files = [
-                    os.path.join(root, file)
-                    for file in files
-                ]
-                selected_files = [
-                    path
-                    for path in fullpath_files
-                    if re_pattern.match(path) is not None
-                ]
-                result_files.extend(selected_files)
+            if folder.name not in self.liftree_config.defaults.get('search_excludes', []):
+                root_dir = folder.path
+                result_folders.append(root_dir)
+                for root, dirs, files in os.walk(root_dir):
+                    fullpath_files = [
+                        os.path.join(root, file)
+                        for file in files
+                    ]
+                    selected_files = [
+                        path
+                        for path in fullpath_files
+                        if re_pattern.match(path) is not None
+                    ]
+                    result_files.extend(selected_files)
 
-                fullpath_foders = [
-                    os.path.join(root, folder)
-                    for folder in dirs
-                ]
-                result_folders.extend(fullpath_foders)
+                    fullpath_foders = [
+                        os.path.join(root, folder)
+                        for folder in dirs
+                    ]
+                    result_folders.extend(fullpath_foders)
 
-        valids_files = dict()
-        for file in result_files:
-            folder = self._is_valid_path(file)
-            if folder is not None:
-                renderer = self._get_renderer(file)
-                if renderer.name not in valids_files:
-                    valids_files[renderer.name] = []
-                valids_files[renderer.name].append(file)
-        results = dict(files=valids_files)
+            valids_files = dict()
+            for file in result_files:
+                folder = self._is_valid_path(file)
+                if folder is not None:
+                    renderer = self._get_renderer(file)
+                    if renderer.name not in valids_files:
+                        valids_files[renderer.name] = []
+                    valids_files[renderer.name].append(file)
+            results = dict(files=valids_files)
         return results
 
     def render(self, path: str):
@@ -232,9 +233,9 @@ class LifTree:
     def _is_valid_path(self, path) -> LifTreeFolder:
         """
         """
-        self.logger.debug(path)
+        # self.logger.debug(path)
         for folder in self.folders:
-            self.logger.debug(folder)
+            # self.logger.debug(folder)
             if path.startswith(folder.path):
                 for exclude in folder.excludes:
                     if re.match(exclude, path) is not None:
@@ -244,10 +245,10 @@ class LifTree:
 
     def _get_renderer(self, path: str) -> LifTreeRenderer:
         for mapping in self.liftree_config.mappings:
-            self.logger.debug(mapping)
+            # self.logger.debug(mapping)
             if re.match(mapping['path'], path) is not None:
                 renderer_name = mapping['renderer']
-                self.logger.debug(renderer_name)
+                # self.logger.debug(renderer_name)
                 renderer = self.liftree_config.get_renderer(renderer_name)
                 break
         return renderer
