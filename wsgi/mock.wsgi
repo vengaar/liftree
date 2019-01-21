@@ -3,9 +3,8 @@ from cgi import parse_qs
 import json
 from logging.config import fileConfig
 
-#
-from constants import *
-from utils import format_search_results_for_sui
+import liftree
+from liftree.utils import format_search_results_for_sui
 
 def application(environ, start_response):
 
@@ -72,13 +71,13 @@ def application(environ, start_response):
             success=True,
             results=results
         )
-        status = HTTP_200
-        content_type = CONTENT_TYPE_JSON
+        status = liftree.HTTP_200
+        content_type = liftree.CONTENT_TYPE_JSON
         output = json.dumps(output)
         output = output.encode('utf-8')
     except:
-        status = HTTP_500
-        content_type = CONTENT_TYPE_TEXT
+        status = liftree.HTTP_500
+        content_type = liftree.CONTENT_TYPE_TEXT
         trace = traceback.format_exc()
         output = trace.encode('utf-8')
 
