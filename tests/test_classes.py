@@ -5,7 +5,7 @@ import os
 import sys
 sys.path.append('.')
 import liftree
-from liftree.classes import LifTreeFolder, LifTreeLoader, Renderer
+from liftree.classes import LifTreeFolder, LifTreeLoader, LifTreeRenderer
 import tests as liftree_tests
 
 class TestLiftreeClasses(unittest.TestCase):
@@ -58,7 +58,7 @@ class TestLiftreeClasses(unittest.TestCase):
         self.assertEqual(liftree_folder.excludes, excludes)
 
     def test_renderer(self):
-        renderer = Renderer(name='name', template='template', extra=self.extra)
+        renderer = LifTreeRenderer(name='name', template='template', extra=self.extra)
         # print(renderer)
         self.assertEqual(renderer.name, 'name')
         self.assertEqual(renderer.template, 'template')

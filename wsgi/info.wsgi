@@ -1,4 +1,4 @@
-import sys
+import sys, os
 import getpass
 import pprint
 import shutil
@@ -12,7 +12,8 @@ def application(environ, start_response):
     data = dict(
         path=str(sys.path),
         environ=environ,
-        user=getpass.getuser()
+        user=getpass.getuser(),
+        os_env=os.environ
     )
     output = pprint.pformat(data).encode('utf-8')
     response_headers = [('Content-type', liftree.CONTENT_TYPE_TEXT),

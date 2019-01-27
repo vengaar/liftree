@@ -6,11 +6,12 @@ import logging, logging.config
 import importlib, inspect
 import sys, os, grp, stat
 import glob
+from typing import Dict #, Tuple, Sequence
 
 # liftree import
 from .constants import *
 from .loaders.file_yaml_loader import get_data as load_yaml_file
-from .classes import LifTreeObject, LifTreeFolder, LifTreeLoader, Renderer
+from .classes import LifTreeObject, LifTreeFolder, LifTreeLoader, LifTreeRenderer
 
 class LifTreeConfig(LifTreeObject):
 
@@ -56,9 +57,9 @@ class LifTreeConfig(LifTreeObject):
         self._logger.debug(f'templates={self.templates}')
         self._logger.debug(f'mappings={self.mappings}')
 
-    def get_renderer(self, name):
+    def get_renderer(self, name: str) -> LifTreeRenderer:
         renderer_data = self.renderers[name]
-        return Renderer(name=name, **renderer_data)
+        return LifTreeRenderer(name=name, **renderer_data)
 
     def _init_from_file(self, file):
         with open(self.root_config_file, 'r') as stream:
@@ -109,44 +110,45 @@ class LifTree:
             for data in self.liftree_config.folders
         ]
 
-    def search(self, query):
+    def search(self, query: str) -> Dict:
         pattern = query.replace(' ', '.*')
         re_pattern = re.compile(f'.*{pattern}.*')
         result_files = []
         result_folders = []
         for folder in self.folders:
-            root_dir = folder.path
-            result_folders.append(root_dir)
-            for root, dirs, files in os.walk(root_dir):
-                fullpath_files = [
-                    os.path.join(root, file)
-                    for file in files
-                ]
-                selected_files = [
-                    path
-                    for path in fullpath_files
-                    if re_pattern.match(path) is not None
-                ]
-                result_files.extend(selected_files)
+            if folder.name not in self.liftree_config.defaults.get('search_excludes', []):
+                root_dir = folder.path
+                result_folders.append(root_dir)
+                for root, dirs, files in os.walk(root_dir):
+                    fullpath_files = [
+                        os.path.join(root, file)
+                        for file in files
+                    ]
+                    selected_files = [
+                        path
+                        for path in fullpath_files
+                        if re_pattern.match(path) is not None
+                    ]
+                    result_files.extend(selected_files)
 
-                fullpath_foders = [
-                    os.path.join(root, folder)
-                    for folder in dirs
-                ]
-                result_folders.extend(fullpath_foders)
+                    fullpath_foders = [
+                        os.path.join(root, folder)
+                        for folder in dirs
+                    ]
+                    result_folders.extend(fullpath_foders)
 
-        valids_files = dict()
-        for file in result_files:
-            folder = self._is_valid_path(file)
-            if folder is not None:
-                renderer = self._get_renderer(file)
-                if renderer.name not in valids_files:
-                    valids_files[renderer.name] = []
-                valids_files[renderer.name].append(file)
-        results = dict(files=valids_files)
+            valids_files = dict()
+            for file in result_files:
+                folder = self._is_valid_path(file)
+                if folder is not None:
+                    renderer = self._get_renderer(file)
+                    if renderer.name not in valids_files:
+                        valids_files[renderer.name] = []
+                    valids_files[renderer.name].append(file)
+            results = dict(files=valids_files)
         return results
 
-    def render(self, path):
+    def render(self, path: str):
         path = self.liftree_config.defaults['path'] if path is None else path
         folder = self._is_valid_path(path)
         if folder is None:
@@ -199,7 +201,7 @@ class LifTree:
         content_type = CONTENT_TYPE_HTML
         return(status, content_type, output.encode('utf-8'))
 
-    def _build_extra(self, renderer, folder):
+    def _build_extra(self, renderer: LifTreeRenderer, folder: LifTreeFolder) -> Dict:
         """
             Build precedence between extra
             renderer > folder
@@ -217,7 +219,7 @@ class LifTree:
         )
         return extra_sources
 
-    def _get_extra(self, extra_sources, path):
+    def _get_extra(self, extra_sources: Dict, path: str) -> Dict:
         data = dict()
         for key, file in extra_sources['files'].items():
             data[key] = load_yaml_file(file, None)
@@ -226,15 +228,14 @@ class LifTree:
             self.logger.debug(key)
             self.logger.debug(loader_desc)
             data[key] = LifTreeLoader(**loader_desc).get_data(path)
-            #data[key] = dict()
         return data
 
-    def _is_valid_path(self, path):
+    def _is_valid_path(self, path) -> LifTreeFolder:
         """
         """
-        self.logger.debug(path)
+        # self.logger.debug(path)
         for folder in self.folders:
-            self.logger.debug(folder)
+            # self.logger.debug(folder)
             if path.startswith(folder.path):
                 for exclude in folder.excludes:
                     if re.match(exclude, path) is not None:
@@ -242,12 +243,12 @@ class LifTree:
                 return folder
         return None
 
-    def _get_renderer(self, path):
+    def _get_renderer(self, path: str) -> LifTreeRenderer:
         for mapping in self.liftree_config.mappings:
-            self.logger.debug(mapping)
+            # self.logger.debug(mapping)
             if re.match(mapping['path'], path) is not None:
                 renderer_name = mapping['renderer']
-                self.logger.debug(renderer_name)
+                # self.logger.debug(renderer_name)
                 renderer = self.liftree_config.get_renderer(renderer_name)
                 break
         return renderer
