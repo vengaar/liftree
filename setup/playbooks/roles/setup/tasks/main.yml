@@ -50,6 +50,7 @@
       file:
         path: /etc/liftree/conf.d/
         state: directory
+        group: "{{ wsgi_user }}"
 
     - name: Deploy logging configuration
       template:

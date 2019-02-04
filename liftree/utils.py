@@ -1,10 +1,10 @@
 
 def get_first_parameter(name, parameters):
     if name in parameters:
-        path = parameters[name][0]
+        value = parameters[name][0]
     else:
         return None
-    return path
+    return value
 
 def format_list_to_sui_options(values):
     """
