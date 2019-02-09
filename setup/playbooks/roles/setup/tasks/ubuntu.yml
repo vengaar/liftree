@@ -1,0 +1,33 @@
+---
+- name: Ubuntu configuration
+  become: true
+  become_user: root
+  block:
+
+    - name: Install dependencies
+      apt:
+        name:
+          - apache2
+          - libapache2-mod-wsgi-py3
+          - python3-jinja2
+          - python3-markdown
+          - python3-bs4
+        state: latest
+
+    - name: Deploy apache configuration
+      template:
+        src: httpd.conf
+        dest: /etc/apache2/conf-available/liftree.conf
+
+    - name: Enable apace configuration
+      file:
+        src: /etc/apache2/conf-available/liftree.conf
+        dest: /etc/apache2/conf-enabled/liftree.conf
+        state: link
+
+    - name: Reload apache config
+      systemd:
+        name: apache2
+        state: reloaded
+        enabled: yes
+...
