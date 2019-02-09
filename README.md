@@ -56,7 +56,8 @@ ansible-playbook liftree/setup/playbooks/setup.yml
 ~~~~
 git clone https://github.com/vengaar/liftree.git
 cd liftree
-chekout devel
+git chekout devel
+git pull
 ansible-playbook setup/playbooks/setup.yml -e "git_version=devel"
 ~~~~
 
