@@ -10,5 +10,5 @@ required:
   os:
     - "Fedora/28"
     - "Fedora/29"
-    - "Ubuntu/28"
+    - "Ubuntu/18"
 ...
