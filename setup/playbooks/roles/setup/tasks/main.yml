@@ -3,6 +3,11 @@
 - debug: var=git_clone
 - debug: var=git_version
 
+- name: Ensure pre-requiste
+  assert:
+    that:
+      - os_version in ansible_distribution in required.os
+
 - name: Deploy from git
   when: git_clone
   block:

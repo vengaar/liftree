@@ -26,7 +26,7 @@ As root on your server
 apt install python3-pip
 pip3 install ansible
 git clone https://github.com/vengaar/liftree.git
-ansible-playbook /home/liftree/liftree/setup/playbooks/setup.yml
+ansible-playbook liftree/setup/playbooks/setup.yml
 ~~~~
 
 ### Fedora
@@ -36,7 +36,7 @@ ansible-playbook /home/liftree/liftree/setup/playbooks/setup.yml
 ~~~~
 dnf install ansible-python3
 git clone https://github.com/vengaar/liftree.git
-ansible-playbook-3 /home/liftree/liftree/setup/playbooks/setup.yml
+ansible-playbook-3 liftree/setup/playbooks/setup.yml
 ~~~~
 
 * For fedora 29
@@ -44,10 +44,22 @@ ansible-playbook-3 /home/liftree/liftree/setup/playbooks/setup.yml
 ~~~~
 dnf install ansible
 git clone https://github.com/vengaar/liftree.git
-ansible-playbook /home/liftree/liftree/setup/playbooks/setup.yml
+ansible-playbook liftree/setup/playbooks/setup.yml
 ~~~~
 
-*NB : To install devel version add `-e "git_version=devel"`to ansible command line above*
+
+git clone https://github.com/vengaar/liftree.git
+ansible-playbook liftree/setup/playbooks/setup.yml
+
+### To test devel
+
+~~~~
+git clone https://github.com/vengaar/liftree.git
+cd liftree
+chekout devel
+ansible-playbook setup/playbooks/setup.yml -e "git_version=devel"
+~~~~
+
 
 ## Test
 

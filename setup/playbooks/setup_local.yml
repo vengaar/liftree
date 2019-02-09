@@ -1,11 +1,6 @@
 ---
 - hosts: localhost
   gather_facts: true
-  pre_tasks:
-    - name: Ensure pre-requiste
-      assert:
-        that:
-          - os_version in ansible_distribution in required.os
   roles:
     - role: setup
       git_clone: false
