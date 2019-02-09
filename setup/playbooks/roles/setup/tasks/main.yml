@@ -35,7 +35,7 @@
     src: example_liftree.conf
     dest: /home/{{ wsgi_user }}/liftree/apps/example/liftree.conf
     owner: "{{ wsgi_user }}"
-    groups: "{{ wsgi_user }}"
+    group: "{{ wsgi_user }}"
 
 - name: Configure liftree
   become: true
