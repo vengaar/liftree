@@ -8,48 +8,31 @@ SWGI application to browse text files and display them via jinja2 templates
 
 * For installation
   * Git
-  * Ansible installed with python3
+  * Ansible
 * Python => 3.6
-* OS
-  * Ubuntu >= 18.04.1 LTS
-  * fedora >= 28
 
 ## Procedure
 
-### Ubuntu
 
-**CAUTION : Need to use pip3, else with apt ansible in stack python2**
+### Ubuntu >= 18
 
 As root on your server
 
 ~~~~
-apt install python3-pip
-pip3 install ansible
+apt install ansible
 git clone https://github.com/vengaar/liftree.git
 ansible-playbook liftree/setup/playbooks/setup.yml
 ~~~~
 
-### Fedora
+### Fedora >= 28
 
-* For fedora 28
-
-~~~~
-dnf install ansible-python3
-git clone https://github.com/vengaar/liftree.git
-ansible-playbook-3 liftree/setup/playbooks/setup.yml
-~~~~
-
-* For fedora 29
+As root on your server
 
 ~~~~
 dnf install ansible
 git clone https://github.com/vengaar/liftree.git
 ansible-playbook liftree/setup/playbooks/setup.yml
 ~~~~
-
-
-git clone https://github.com/vengaar/liftree.git
-ansible-playbook liftree/setup/playbooks/setup.yml
 
 ### To test devel
 
