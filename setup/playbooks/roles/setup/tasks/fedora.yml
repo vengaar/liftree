@@ -13,6 +13,8 @@
           - python3-markdown
           - python3-beautifulsoup4
           - libselinux-python
+          - policycoreutils-python
+          - python3-PyYAML
         state: latest
 
     - name: (fedora) Deploy apache configuration
