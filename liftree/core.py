@@ -7,6 +7,7 @@ import importlib, inspect
 import sys, os, grp, stat
 import glob
 from typing import Dict #, Tuple, Sequence
+import pathlib
 
 # liftree import
 from .constants import *
@@ -17,7 +18,7 @@ class LifTreeConfig(LifTreeObject):
 
     root_config_dir = '/etc/liftree'
     root_config_file = os.path.join(root_config_dir, 'liftree.conf')
-    generated_config_file = os.path.join(root_config_dir, 'generated_liftree.conf')
+    generated_config_file = os.path.join(str(pathlib.Path.home()), 'generated_liftree.conf')
     root_include_dir = os.path.join(root_config_dir, 'conf.d')
     root_include_pattern = os.path.join(root_include_dir, '*.conf')
 
@@ -47,7 +48,7 @@ class LifTreeConfig(LifTreeObject):
                 with open(file, 'r') as stream:
                     config_include = yaml.load(stream)
                 self._import_config(config_include)
-            # self._write()
+#             self._write()
 
         for lib_path in self.import_path:
             if lib_path not in sys.path:
@@ -148,13 +149,15 @@ class LifTree:
             results = dict(files=valids_files)
         return results
 
-    def render(self, path: str):
+    def render(self, path: str, renderer_name: str=None):
         path = self.liftree_config.defaults['path'] if path is None else path
         folder = self._is_valid_path(path)
         if folder is None:
             renderer = self.liftree_config.get_renderer('forbidden')
         else:
             renderer = self._get_renderer(path)
+            if renderer.name != 'forbidden' and renderer_name is not None:
+                renderer = self.liftree_config.get_renderer(renderer_name)
         self.logger.debug(f'renderer={renderer}')
         if renderer.loader is not None:
             data = renderer.loader.get_data(path)

@@ -26,7 +26,7 @@ class TestSearch(unittest.TestCase):
             "markdown": [
               f"{liftree_tests.LIFTREE_PATH_TEST}/data/test.md"
             ],
-            "raw": [
+            "text": [
               f"{liftree_tests.LIFTREE_PATH_TEST}/data/test.text"
             ],
             "yaml": [
@@ -68,8 +68,8 @@ class TestSearch(unittest.TestCase):
                 }
             ]
             },
-            "raw": {
-            "name": "raw",
+            "text": {
+            "name": "text",
             "results": [
                 {
                 "title": f"{liftree_tests.LIFTREE_PATH_TEST}/data/test.text",

@@ -5,4 +5,10 @@ git_clone: false
 git_version: HEAD
 wsgi_user: liftree
 liftree_logfile: /home/{{ wsgi_user }}/liftree.log
+os_version: "{{ ansible_distribution }}/{{ ansible_distribution_major_version }}"
+required:
+  os:
+    - "Fedora/28"
+    - "Fedora/29"
+    - "Ubuntu/18"
 ...

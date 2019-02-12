@@ -16,8 +16,9 @@ def application(environ, start_response):
         fileConfig('/etc/liftree/logging.conf')
         parameters = parse_qs(environ['QUERY_STRING'])
         path = get_first_parameter('path', parameters)
+        renderer = get_first_parameter('renderer', parameters)
         _liftree = LifTree()
-        status, content_type, output = _liftree.render(path)
+        status, content_type, output = _liftree.render(path, renderer)
     except:
         status = liftree.HTTP_500
         content_type = liftree.CONTENT_TYPE_TEXT

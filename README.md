@@ -1,34 +1,52 @@
 # liftree
+
 SWGI application to browse text files and display them via jinja2 templates
 
 # Setup
 
 ## Prerequisite
 
-* python => 3.6
-* fedora => 28
+* For installation
+  * Git
+  * Ansible
+* Python => 3.6
 
 ## Procedure
 
+
+### Ubuntu >= 18
+
 As root on your server
 
-* on fedora 28
-
 ~~~~
-dnf install ansible-python3
+apt install ansible
 git clone https://github.com/vengaar/liftree.git
-ansible-playbook-3 /home/liftree/liftree/setup/playbooks/setup.yml -v
+ansible-playbook liftree/setup/playbooks/setup.yml
 ~~~~
 
-* on fedora 29
+### Fedora >= 28
+
+As root on your server
 
 ~~~~
 dnf install ansible
 git clone https://github.com/vengaar/liftree.git
-ansible-playbook /home/liftree/liftree/setup/playbooks/setup.yml -v
+ansible-playbook liftree/setup/playbooks/setup.yml
 ~~~~
 
+### To test devel
+
+~~~~
+git clone https://github.com/vengaar/liftree.git
+cd liftree
+git chekout devel
+git pull
+ansible-playbook setup/playbooks/setup.yml -e "git_version=devel"
+~~~~
+
+
 ## Test
+
 Test url:
 
 * http://{your_ip}/info
