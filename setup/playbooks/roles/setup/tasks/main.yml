@@ -20,6 +20,7 @@
       user:
         name: "{{ wsgi_user }}"
         comment: Liftree applicatif user
+        shell: /bin/bash
   
     - name: Clone git repo on user home
       become: true
