@@ -46,6 +46,9 @@ def filter_to_markdown(value):
     extensions = ['extra', 'smarty']
     return markdown.markdown(value, extensions=extensions, output_format='html5')
 
+def filter_dirname(path):
+     return os.path.dirname(path)
+
 def filter_basename(path):
      return os.path.basename(path)
 
