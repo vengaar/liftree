@@ -13,7 +13,8 @@ def get_data(path, params):
     """
     logger = logging.getLogger('LOADER_get_git_info')
     if MODULE_GIT_AVAILABLE:
-        git_base = params['repo']
+        param_repo = params['repo']
+        git_base = os.path.expanduser(param_repo)
         path_rel = os.path.relpath(path, start=git_base)
         repo = git.Repo(git_base)
         untracked = path_rel in repo.untracked_files
