@@ -6,8 +6,8 @@ import datetime
 
 UNKNOW = '?'
 
-def filter_liftree_link(path):
-    return f'<a href="/show?path={path}">{path}</a>'
+def filter_liftree_link(path, class_name=''):
+    return f'<a class="{class_name}" href="/show?path={path}">{os.path.basename(path)}</a>'
 
 def filter_timestamp_delta(begin, end):
     try:

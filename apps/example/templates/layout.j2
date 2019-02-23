@@ -1,7 +1,6 @@
 <!doctype html>
 <html>
   <head>
-  {% block head %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Test</title>
@@ -13,7 +12,6 @@
         margin-top: 6em;
       }
     </style>
-  {% endblock %}
   </head>
   <body>
     <div class="ui fixed inverted main menu">
@@ -24,8 +22,9 @@
         Show test files
         <i class="dropdown icon"></i>
         <div class="menu">
-{% for file in extra.test_files %}
-          <a class="item" href="/show?path={{ file }}">{{ file.split('/')[-1] }}</a>
+{% for file in ['test.json', 'test.md', 'test.secret', 'test.text', 'test.yaml'] %}
+          {% set path = '~/liftree/tests/data/' + file %}
+          {{ path|liftree_link(class_name='item') }}
 {% endfor %}
         </div>
       </div>

@@ -66,7 +66,7 @@ class TestRender(unittest.TestCase):
         # pprint.pprint(extra_sources)
         self.assertIsInstance(extra_sources['loaders'], dict)
         self.assertIsInstance(extra_sources['files'], dict)
-        self.assertEqual(extra_sources['loaders']['test']['name'], 'get_test_folder')
+        self.assertEqual(extra_sources['loaders']['test_folder']['name'], 'get_test')
 
         test_file = self.test_file_none
         folder = _liftree._is_valid_path(test_file)
@@ -82,13 +82,19 @@ class TestRender(unittest.TestCase):
         renderer = _liftree._get_renderer(test_file)
         extra_sources = _liftree._build_extra(renderer, folder)
         extra = LifTree()._get_extra(extra_sources, test_file)
-        self.assertEqual(extra['test'], 'I love Liftree')
+        self.assertEqual(extra['test_folder'], 'I love Liftree [folder]')
 
-        renderer._add_extra_loader('test', dict(name='get_test_page'))
+        loader_test = {
+            'name': 'get_test',
+            'params': {
+                'for': 'unittest'
+            }
+        }
+        renderer._add_extra_loader('test_page', loader_test)
         renderer._add_extra_file('secret', self.test_file_forbidden)
         extra_sources = _liftree._build_extra(renderer, folder)
         extra = LifTree()._get_extra(extra_sources, self.test_file_json)
-        self.assertEqual(extra['test'], 'I love this page')
+        self.assertEqual(extra['test_page'], 'I love Liftree [unittest]')
         self.assertEqual(extra['secret'], 'The secret file')
 
     def test_render(self):
