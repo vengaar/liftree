@@ -54,7 +54,7 @@ class TestRender(unittest.TestCase):
         # Files not valid but matching pattern
         # Security is concern of _is_valid_path not _get_renderer
         renderer = _liftree._get_renderer(self.test_file_out)
-        self.assertEqual(renderer.name, 'raw')
+        self.assertEqual(renderer.name, 'text')
         renderer = _liftree._get_renderer(self.test_file_exclude)
         self.assertEqual(renderer.name, 'json')
 

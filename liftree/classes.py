@@ -53,7 +53,7 @@ class LifTreeExtra(LifTreeObject):
 class LifTreeFolder(LifTreeExtra):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.path = kwargs['path']
+        self.path = os.path.expanduser(kwargs['path'])
         self.excludes = kwargs.get('excludes', [])
 
 class LifTreeRenderer(LifTreeExtra):
