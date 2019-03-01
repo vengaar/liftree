@@ -150,7 +150,8 @@ class LifTree:
         return results
 
     def render(self, path: str, renderer_name: str=None):
-        path = self.liftree_config.defaults['path'] if path is None else path
+        if path is None:
+            path =  os.path.expanduser(self.liftree_config.defaults['path'])
         folder = self._is_valid_path(path)
         if folder is None:
             renderer = self.liftree_config.get_renderer('forbidden')
@@ -191,7 +192,7 @@ class LifTree:
         template = j2_env.get_template(renderer.template)
         meta = dict(
             path = path,
-            folder = folder._get_data(),
+            folder = folder._get_data() if folder is not None else None,
             renderer = renderer._get_data(),
             config = self.liftree_config._get_data(),
             filters = filters,

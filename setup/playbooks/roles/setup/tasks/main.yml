@@ -31,13 +31,6 @@
         version: "{{ git_version }}"
         force: yes 
 
-- name: Deploy liftree.conf for example
-  template:
-    src: example_liftree.conf
-    dest: /home/{{ wsgi_user }}/liftree/apps/example/liftree.conf
-    owner: "{{ wsgi_user }}"
-    group: "{{ wsgi_user }}"
-
 - name: Configure liftree
   become: true
   become_user: root
