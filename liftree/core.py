@@ -6,13 +6,14 @@ import logging, logging.config
 import importlib, inspect
 import sys, os, grp, stat
 import glob
-from typing import Dict #, Tuple, Sequence
+from typing import Dict  # , Tuple, Sequence
 import pathlib
 
 # liftree import
 from .constants import *
 from .loaders.file_yaml_loader import get_data as load_yaml_file
 from .classes import LifTreeObject, LifTreeFolder, LifTreeLoader, LifTreeRenderer
+
 
 class LifTreeConfig(LifTreeObject):
 
@@ -100,6 +101,7 @@ class LifTreeConfig(LifTreeObject):
         default = config.get('defaults', dict())
         self.defaults.update(default)
 
+
 class LifTree:
 
     def __init__(self):
@@ -151,7 +153,7 @@ class LifTree:
 
     def render(self, path: str, renderer_name: str=None):
         if path is None:
-            path =  os.path.expanduser(self.liftree_config.defaults['path'])
+            path = os.path.expanduser(self.liftree_config.defaults['path'])
         folder = self._is_valid_path(path)
         if folder is None:
             renderer = self.liftree_config.get_renderer('forbidden')
@@ -172,7 +174,7 @@ class LifTree:
         # Add custom filters
         filters = []
         import_dirs = self.liftree_config.import_path
-        self.logger.debug(import_dirs)                    
+        self.logger.debug(import_dirs)
         for import_dir in import_dirs:
             filter_dir = os.path.join(import_dir, 'filters')
             if os.path.isdir(filter_dir):
@@ -191,12 +193,12 @@ class LifTree:
 
         template = j2_env.get_template(renderer.template)
         meta = dict(
-            path = path,
-            folder = folder._get_data() if folder is not None else None,
-            renderer = renderer._get_data(),
-            config = self.liftree_config._get_data(),
-            filters = filters,
-            self = id(self)
+            path=path,
+            folder=folder._get_data() if folder is not None else None,
+            renderer=renderer._get_data(),
+            config=self.liftree_config._get_data(),
+            filters=filters,
+            self=id(self)
         )
         extra_sources = self._build_extra(renderer, folder)
         extra = self._get_extra(extra_sources, path)
