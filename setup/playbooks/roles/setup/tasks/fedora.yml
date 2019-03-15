@@ -15,7 +15,7 @@
           - libselinux-python
           - policycoreutils-python
           - python3-PyYAML
-            python3-jmespath
+          - python3-jmespath
         state: latest
 
     - name: (fedora) Deploy apache configuration
