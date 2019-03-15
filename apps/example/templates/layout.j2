@@ -4,12 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Test</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/fomantic-ui@2.7.2/dist/semantic.min.css"/>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.10.0/github-markdown.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.10.0/github-markdown.min.css">
     <style>
       .main.container {
         margin-top: 6em;
+        margin-bottom: 3em;
       }
     </style>
   </head>
@@ -22,7 +23,7 @@
         Show test files
         <i class="dropdown icon"></i>
         <div class="menu">
-{% for file in ['test.json', 'test.md', 'test.secret', 'test.text', 'test.yaml'] %}
+{% for file in ['test.json', 'test.md', 'test.secret', 'test.text', 'test.yaml', 'test.plugins'] %}
           {% set path = '~/liftree/tests/data/' + file %}
           {{ path|liftree_link(class_name='item') }}
 {% endfor %}
@@ -43,8 +44,8 @@
     {% endblock %}
     </div>
     <!-- scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.2/dist/semantic.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>

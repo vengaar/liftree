@@ -3,8 +3,20 @@ import json
 import os
 import markdown
 import datetime
+import jmespath
 
 UNKNOW = '?'
+
+def filter_file_stat(value):
+    """
+    """
+    if os.path.isfile(value):
+        return os.stat(value)
+    else:
+        return f'{value} is not a file'
+
+def filter_json_query(data, expr):
+    return jmespath.search(expr, data)
 
 def filter_liftree_link(path, class_name=''):
     return f'<a class="{class_name}" href="/show?path={path}">{os.path.basename(path)}</a>'
@@ -51,26 +63,6 @@ def filter_dirname(path):
 
 def filter_basename(path):
      return os.path.basename(path)
-
-def filter_flat(default, sep=','):
-    if default is None:
-        return ''
-    elif isinstance(default, list):
-        return sep.join(default)
-    else:
-        return default
-
-def filter_to_sui_options(value, selected=False):
-    if value is None:
-        selected_options = []
-    elif isinstance(value, list):
-        selected_options = [
-            dict(name=option, value=option, selected=selected)
-            for option in value
-        ]
-    else:
-        selected_options = [dict(name=value, value=value, selected=selected)]
-    return json.dumps(selected_options)
 
 def filter_get(my_list, value, default=''):
     """
