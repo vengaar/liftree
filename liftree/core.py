@@ -1,10 +1,13 @@
 from jinja2 import Environment, FileSystemLoader
-import json
 import yaml
-import re, fnmatch
-import logging, logging.config
-import importlib, inspect
-import sys, os, grp, stat
+import re
+import logging
+import importlib
+import inspect
+import sys
+import os
+import grp
+import stat
 import glob
 from typing import Dict  # , Tuple, Sequence
 import pathlib
@@ -13,7 +16,6 @@ import pathlib
 from .constants import *
 from .loaders.file_yaml_loader import get_data as load_yaml_file
 from .classes import LifTreeObject, LifTreeFolder, LifTreeLoader, LifTreeRenderer
-from pip._vendor.html5lib.treewalkers import pprint
 
 
 class LifTreeConfig(LifTreeObject):
