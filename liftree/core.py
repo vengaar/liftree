@@ -1,18 +1,22 @@
 from jinja2 import Environment, FileSystemLoader
-import json
 import yaml
-import re, fnmatch
-import logging, logging.config
-import importlib, inspect
-import sys, os, grp, stat
+import re
+import logging
+import importlib
+import inspect
+import sys
+import os
+import grp
+import stat
 import glob
-from typing import Dict #, Tuple, Sequence
+from typing import Dict  # , Tuple, Sequence
 import pathlib
 
 # liftree import
 from .constants import *
 from .loaders.file_yaml_loader import get_data as load_yaml_file
 from .classes import LifTreeObject, LifTreeFolder, LifTreeLoader, LifTreeRenderer
+
 
 class LifTreeConfig(LifTreeObject):
 
@@ -100,6 +104,7 @@ class LifTreeConfig(LifTreeObject):
         default = config.get('defaults', dict())
         self.defaults.update(default)
 
+
 class LifTree:
 
     def __init__(self):
@@ -151,7 +156,7 @@ class LifTree:
 
     def render(self, path: str, renderer_name: str=None):
         if path is None:
-            path =  os.path.expanduser(self.liftree_config.defaults['path'])
+            path = os.path.expanduser(self.liftree_config.defaults['path'])
         folder = self._is_valid_path(path)
         if folder is None:
             renderer = self.liftree_config.get_renderer('forbidden')
@@ -168,35 +173,16 @@ class LifTree:
             loader=FileSystemLoader(self.liftree_config.templates),
             trim_blocks=True
         )
-
-        # Add custom filters
-        filters = []
-        import_dirs = self.liftree_config.import_path
-        self.logger.debug(import_dirs)                    
-        for import_dir in import_dirs:
-            filter_dir = os.path.join(import_dir, 'filters')
-            if os.path.isdir(filter_dir):
-                for file in os.listdir(filter_dir):
-                    result = re.search('^(?P<module_name>.*).py$', file)
-                    if result is not None:
-                        module_name = result.group('module_name')
-                        module_filter = importlib.import_module(f'filters.{module_name}')
-                        for tuple_function in inspect.getmembers(module_filter, predicate=inspect.isfunction):
-                            (name, function) = tuple_function
-                            filter_prefix = 'filter_'
-                            if name.startswith(filter_prefix):
-                                filter_name = name[len(filter_prefix):]
-                                filters.append(filter_name)
-                                j2_env.filters[filter_name] = function
-
+        plugins = self._extend_j2(j2_env)
         template = j2_env.get_template(renderer.template)
         meta = dict(
-            path = path,
-            folder = folder._get_data() if folder is not None else None,
-            renderer = renderer._get_data(),
-            config = self.liftree_config._get_data(),
-            filters = filters,
-            self = id(self)
+            path=path,
+            stat=os.stat(path),
+            folder=folder._get_data() if folder is not None else None,
+            renderer=renderer._get_data(),
+            config=self.liftree_config._get_data(),
+            plugins=plugins,
+            self=id(self)
         )
         extra_sources = self._build_extra(renderer, folder)
         extra = self._get_extra(extra_sources, path)
@@ -204,6 +190,31 @@ class LifTree:
         status = HTTP_200
         content_type = CONTENT_TYPE_HTML
         return(status, content_type, output.encode('utf-8'))
+
+    def _extend_j2(self, j2_env):
+        extends = {'filters': [], 'tests': []}
+        import_dirs = self.liftree_config.import_path
+        self.logger.debug(import_dirs)
+        for import_dir in import_dirs:
+            folder_path = os.path.join(import_dir, 'plugins')
+            if os.path.isdir(folder_path):
+                for file in os.listdir(folder_path):
+                    result = re.search('^(?P<module_name>.*).py$', file)
+                    if result is not None:
+                        module_name = result.group('module_name')
+                        module_extend = importlib.import_module(f'plugins.{module_name}')
+                        for tuple_function in inspect.getmembers(module_extend, predicate=inspect.isfunction):
+                            (name, function) = tuple_function
+
+                            if name.startswith('filter_'):
+                                filter = name[len('filter_'):]
+                                extends['filters'].append(filter)
+                                j2_env.filters[filter] = function
+                            if name.startswith('test_'):
+                                test = name[len('test_'):]
+                                extends['tests'].append(test)
+                                j2_env.tests[test] = function
+        return extends
 
     def _build_extra(self, renderer: LifTreeRenderer, folder: LifTreeFolder) -> Dict:
         """

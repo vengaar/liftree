@@ -1,0 +1,61 @@
+---
+filters:
+  basename:
+  - value: /etc/liftree/liftree.conf
+    expected: liftree.conf
+  dirname:
+  - value: /etc/liftree/liftree.conf
+    expected: /etc/liftree
+  file_stat:
+  - value: /etc/liftree/liftree.conf
+  seconds2duration:
+  - value: 0
+    expected: 0:00:00
+  - value: -60
+    expected: -1 day, 23:59:00
+  - value: 60
+    expected: 0:01:00
+  - value: 123456789
+    expected: 1428 days, 21:33:09
+  timestamp2date:
+  - value: 0
+    expected: "1970-01-01 00:00:00"
+  - value: 123456789
+    expected: "1973-11-29 21:33:09"
+  to_json:
+  - value:
+      - 1
+      - true
+      - false
+      - bar
+      - key: plip
+        value: plop
+        test:
+    expected: '[1, true, false, "bar", {"key": "plip", "value": "plop", "test": null}]'
+  to_yaml:
+  - value:
+      - 1
+      - true
+      - false
+      - bar
+      - key: plip
+        value: plop
+        test:
+    expected: |
+      - 1
+      - true
+      - false
+      - bar
+      - key: plip
+        test: null
+        value: plop
+
+tests:
+  file:
+  - value: /etc/liftree/liftree.conf
+    expected: true
+  - value: /tmp/mflglgkpfk/nvnhcjapder
+    expected: false
+  - value: /tmp
+    expected: false
+...

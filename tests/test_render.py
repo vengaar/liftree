@@ -115,5 +115,5 @@ class TestRender(unittest.TestCase):
 
 if __name__ == '__main__':
     import logging
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
     unittest.main()

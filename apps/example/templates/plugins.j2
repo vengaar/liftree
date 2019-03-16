@@ -1,0 +1,95 @@
+{% extends "layout.j2" %}
+{% block body %}
+
+<h3 class"ui header">
+  <i class="filter icon"></i>
+  Filters
+</h3>
+{% for test in meta.plugins.filters %}
+<div class="ui orange label">{{ test }}</div>
+{% endfor %}
+
+{% for name in meta.plugins.filters %}
+<div class="ui segments">
+  <div class="ui orange segment">{{ name }}</div>
+  {% if name in data.filters.keys() %}
+    {% for test in data.filters[name] %}
+      {% if name == 'dirname' %}
+        {% set result = test.value|dirname %}
+      {% elif name == 'basename' %}
+        {% set result = test.value|basename %}
+      {% elif name == 'file_stat' %}
+        {% set result = test.value|file_stat %}
+      {% elif name == 'get' %}
+        {% set result = test.value|get %}
+      {% elif name == 'json_query' %}
+        {% set result = test.value|json_query %}
+      {% elif name == 'liftree_link' %}
+        {% set result = test.value|liftree_link %}
+      {% elif name == 'seconds2duration' %}
+        {% set result = test.value|seconds2duration %}
+      {% elif name == 'timestamp2date' %}
+        {% set result = test.value|timestamp2date %}
+      {% elif name == 'timestamp_delta' %}
+        {% set result = test.value|timestamp_delta %}
+      {% elif name == 'to_json' %}
+        {% set result = test.value|to_json %}
+      {% elif name == 'to_markdown' %}
+        {% set result = test.value|to_markdown %}
+      {% elif name == 'to_yaml' %}
+        {% set result = test.value|to_yaml %}
+      {% endif %}
+  <div class="ui segment">
+      {% if test.expected is undefined %}
+    <i class="question icon"></i>
+      {% elif result == test.expected %}
+    <i class="check green icon"></i>
+      {% else %}
+    <i class="close red icon"></i>
+      {% endif %}
+    <code>{{ '{{' + '"{value}"|{filter}'.format(value=test.value, filter=name) + '}}' }}</code>
+    <pre class="ui secondary segment">{{ result }}</pre>
+  </div>
+    {% endfor %}
+  {% else %}
+  <div class="ui segment">
+    <div class="ui warning message">No test found</div>
+  </div>
+  {% endif %}
+</div>
+{% endfor %}
+
+
+<h3 class="ui header">
+  <i class="vial icon"></i>
+  Test
+</h3>
+{% for test in meta.plugins.tests %}
+<div class="ui olive label">{{ test }}</div>
+{% endfor %}
+
+{% for name in meta.plugins.tests %}
+  {% set tests = data.tests[name] %}
+<div class="ui segments">
+  <div class="ui olive segment">{{ name }}</div>
+  {% for test in tests %}
+    {% if name == 'file' %}
+      {% set result = test.value is file %}
+    {% elif name == 'file' %}
+      {% set result = test.value is file %}
+    {% endif %}
+  <div class="ui segment">
+    {% if result == test.expected %}
+    <i class="check green icon"></i>
+    {% else %}
+    <i class="check red close"></i>
+    {% endif %}
+    <code>{{ '{{' + '"{value}" is {test}'.format(value=test.value, test=name) + '}}'}}</code>
+    <i class="arrow right icon"></i>
+    {{ result }}  
+  </div>
+  {% endfor %}
+</div>
+{% endfor %}
+
+{% endblock %}
