@@ -175,9 +175,10 @@ class LifTree:
         )
         plugins = self._extend_j2(j2_env)
         template = j2_env.get_template(renderer.template)
+        stat = os.stat(path) if os.path.isfile(path) else None
         meta = dict(
             path=path,
-            stat=os.stat(path),
+            stat=stat,
             folder=folder._get_data() if folder is not None else None,
             renderer=renderer._get_data(),
             config=self.liftree_config._get_data(),
