@@ -250,13 +250,14 @@ class LifTree:
         """
         """
         # self.logger.debug(path)
-        for folder in self.folders:
-            # self.logger.debug(folder)
-            if path.startswith(folder.path):
-                for exclude in folder.excludes:
-                    if re.match(exclude, path) is not None:
-                        return None
-                return folder
+        if os.path.isfile(path):
+            for folder in self.folders:
+                # self.logger.debug(folder)
+                if path.startswith(folder.path):
+                    for exclude in folder.excludes:
+                        if re.match(exclude, path) is not None:
+                            return None
+                    return folder
         return None
 
     def _get_renderer(self, path: str) -> LifTreeRenderer:
