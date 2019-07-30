@@ -1,11 +1,13 @@
+{% set version_fomantic_ui = '2.7.7' %}
+{% set version_highlightjs = '9.15.8' %}
 <!doctype html>
 <html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Test</title>
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/fomantic-ui@2.7.2/dist/semantic.min.css"/>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css">
+    <title>Liftree demo</title>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/fomantic-ui@{{ version_fomantic_ui }}/dist/semantic.min.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/{{ version_highlightjs }}/styles/default.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.10.0/github-markdown.min.css">
     <style>
       .main.container {
@@ -45,8 +47,8 @@
     </div>
     <!-- scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.2/dist/semantic.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@{{ version_fomantic_ui }}/dist/semantic.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/{{ version_highlightjs }}/highlight.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
     <script>
@@ -58,11 +60,6 @@
           url: '/search?query={query}&format=sui'
         },
       });
-    </script>
-    <script>
-      'use strict'
-{% block script %}
-{% endblock %}
     </script>
   </body>
 </html>
