@@ -11,9 +11,8 @@
       - os_version in required.os
 
 - name: Deploy from git
-  when: git_clone
+  when: git_clone|bool
   block:
-
     - name: Create user
       become: true
       become_user: root
@@ -35,7 +34,6 @@
   become: true
   become_user: root
   block:
-
     - name: Create config directory
       file:
         path: /etc/liftree/conf.d/
@@ -59,6 +57,7 @@
           ---
           name: /home/{{ wsgi_user }}/liftree/apps/example
           ...
+
     - name: Update permission to allow apache reach wsgi
       file:
         path: /home/{{ wsgi_user }}
@@ -68,22 +67,29 @@
 - include_tasks: "{{ ansible_distribution|lower }}.yml"
 
 - name: Test liftree installation
+  tags:
+    - tests
   block:
-
-    - name: Final test
+    - name: Final show test
       uri:
-        url: http://localhost/show
+        url: "{{ wsgi_base_url }}/show"
         return_content: true
-      register: register_final_test
-    
-    # - debug: var=register_final_test
-    
-    - name: Check final test
-      assert:
-        that:
-          - register_final_test.status == 200
-          - register_final_test.content is search("<!-- unittest -->")
-    
-    - name: Display test url
-      debug: msg="Go on http://{{ ansible_default_ipv4.address }}/show to test"
+      register: register_show_test
+      failed_when:
+        - register_show_test.status == 200
+        - register_show_test.content is not search("<!-- unittest -->")
+
+    - name: Final search test
+      uri:
+        url: "{{ wsgi_base_url }}/search"
+        return_content: true
+        body_format: json
+      register: register_search_test
+      failed_when:
+        - register_search_test.status == 200
+        - register_search_test.json.files.forbidden[0]|basename != "test.secret"
+
+- name: Display demo url
+  debug:
+    msg: Go on {{ wsgi_base_url }}/show to test
 ...

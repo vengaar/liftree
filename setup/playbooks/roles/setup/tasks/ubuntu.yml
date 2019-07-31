@@ -3,7 +3,6 @@
   become: true
   become_user: root
   block:
-
     - name: Install dependencies
       apt:
         name:

@@ -4,6 +4,8 @@ git_repo: "https://github.com/vengaar/{{ git_name }}.git"
 git_clone: false
 git_version: HEAD
 wsgi_user: liftree
+wsgi_port: 80
+wsgi_base_url: http://{{ ansible_default_ipv4.address }}:{{ wsgi_port }}
 liftree_logfile: /home/{{ wsgi_user }}/liftree.log
 os_version: "{{ ansible_distribution }}/{{ ansible_distribution_major_version }}"
 required:
