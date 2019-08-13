@@ -72,7 +72,7 @@
   block:
     - name: Final show test
       uri:
-        url: "{{ wsgi_base_url }}/show"
+        url: "{{ wsgi_base_url }}/show?path=~/liftree/tests/README.md"
         return_content: true
       register: register_show_test
       failed_when:
