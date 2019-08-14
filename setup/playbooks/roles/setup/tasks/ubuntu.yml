@@ -17,13 +17,14 @@
     - name: Deploy apache configuration
       template:
         src: httpd.conf
-        dest: /etc/apache2/conf-available/liftree.conf
+        dest: /etc/apache2/sites-available/wapi.conf
 
-    - name: Enable apace configuration
-      file:
-        src: /etc/apache2/conf-available/liftree.conf
-        dest: /etc/apache2/conf-enabled/liftree.conf
-        state: link
+    - name: Use a2* command to enable {{ git_name }} site
+      shell: "{{ item }}"
+      loop:
+        - "a2enmod http2"
+        - "a2enmod headers"
+        - "a2ensite {{ git_name }}.conf"
 
     - name: Reload apache config
       systemd:
