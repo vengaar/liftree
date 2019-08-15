@@ -1,12 +1,12 @@
 ---
-git_name: liftree
+git_name: "liftree"
 git_repo: "https://github.com/vengaar/{{ git_name }}.git"
 git_clone: false
-git_version: HEAD
-wsgi_user: liftree
+git_version: "HEAD"
+wsgi_user: "liftree"
 wsgi_port: 8043
-wsgi_base_url: http://{{ ansible_default_ipv4.address }}:{{ wsgi_port }}
-liftree_logfile: /home/{{ wsgi_user }}/liftree.log
+wsgi_base_url: "http://{{ ansible_default_ipv4.address }}:{{ wsgi_port }}"
+liftree_logfile: "/home/{{ wsgi_user }}/liftree.log"
 os_version: "{{ ansible_distribution }}/{{ ansible_distribution_major_version }}"
 required:
   os:
