@@ -9,7 +9,7 @@
   block:
     - name: Disable apache config
       shell: a2disconf {{ git_name }}.conf
-    - nane: Remove old apache config file
+    - name: Remove old apache config file
       file:
         path: "{{ old_apache_config_file }}"
         state: absent
