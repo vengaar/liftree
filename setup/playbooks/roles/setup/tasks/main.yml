@@ -75,9 +75,8 @@
         url: "{{ wsgi_base_url }}/show?path=~/liftree/tests/README.md"
         return_content: true
       register: register_show_test
-      failed_when:
-        - register_show_test.status == 200
-        - register_show_test.content is not search("<!-- unittest -->")
+      failed_when: register_show_test.status != 200
+        or register_show_test.content is not search("<!-- unittest -->")
 
     - name: Final search test
       uri:
