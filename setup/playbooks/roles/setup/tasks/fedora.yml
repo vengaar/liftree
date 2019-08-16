@@ -50,6 +50,13 @@
         - name: Apply new SELinux file context to log file
           command: restorecon -iv {{ liftree_logfile }}
 
+        - name: Allow Apache to listen on tcp port {{ wsgi_port }}
+          seport:
+            ports: "{{ wsgi_port }}"
+            proto: tcp
+            setype: http_port_t
+            state: present
+
     - name: Manage firewalld
       firewalld:
         port: "{{ wsgi_port }}/tcp"
