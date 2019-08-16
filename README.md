@@ -13,15 +13,13 @@ SWGI application to browse text files and display them via jinja2 templates
   * Ansible
 * Python => 3.6
 
-### Defaults
+## Defaults
 
 * The default settings are available in defaults of ansible setup role
 * See [defaults setup role]
-* By default liftree run on port 8043 but you override it with an ansible extra_vars as `-e "wsgi_port=80"`
-
+* By default liftree run on port 8043 but you can override it with an ansible extra_vars as `-e "wsgi_port=80"`
 
 ## Procedure
-
 
 ### Ubuntu >= 18
 
