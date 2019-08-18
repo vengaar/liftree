@@ -64,6 +64,14 @@
         state: directory
         mode: 0755
 
+- include_tasks: selinux.yml
+  when:
+    - ansible_selinux_python_present
+    - ansible_selinux.status == "enabled"
+    - ansible_selinux.mode == "enforcing"
+  tags:
+    - selinux
+
 - include_tasks: "{{ ansible_distribution|lower }}.yml"
 
 - name: Test liftree installation
