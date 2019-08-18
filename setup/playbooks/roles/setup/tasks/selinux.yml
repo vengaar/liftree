@@ -1,0 +1,39 @@
+---
+- name: selinux configuration
+  become: true
+  become_user: root
+  tags:
+    - selinux
+  block:
+    - name: Enable selinux boolean
+      seboolean:
+        name: "{{ item }}"
+        state: yes
+        persistent: yes
+      loop:
+        - httpd_enable_homedirs
+        - httpd_read_user_content
+
+    - name: Create empty log file
+      file:
+        path: "{{ liftree_logfile }}"
+        state: touch
+        owner: "{{ wsgi_user }}"
+        group: "{{ wsgi_user }}"
+
+    - name: Set context for log file
+      sefcontext:
+        target: "{{ liftree_logfile }}"
+        setype: httpd_sys_rw_content_t
+        state: present
+
+    - name: Apply new SELinux file context to log file
+      command: restorecon -v {{ liftree_logfile }}
+
+    - name: Allow Apache to listen on tcp port {{ wsgi_port }}
+      seport:
+        ports: "{{ wsgi_port }}"
+        proto: tcp
+        setype: http_port_t
+        state: present
+...
