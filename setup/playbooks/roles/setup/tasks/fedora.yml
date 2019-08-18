@@ -47,6 +47,7 @@
             target: "{{ liftree_logfile }}"
             setype: httpd_sys_rw_content_t
             state: present
+
         - name: Apply new SELinux file context to log file
           command: restorecon -iv {{ liftree_logfile }}
 
