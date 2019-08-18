@@ -106,7 +106,7 @@ class TestRender(unittest.TestCase):
         # print(soup.prettify())
         code = soup.find(id='liftree_data')
         text = code.get_text()
-        data = yaml.load(text)
+        data = yaml.safe_load(text)
         with open(self.test_file_json, 'r') as file:
             expected_data = json.load(file)
             self.assertEqual(data, expected_data)

@@ -13,6 +13,6 @@ def get_data(path, params):
     data = "".join(lines)
     # print(data)
     if format == 'yaml':
-        return yaml.load("".join(data))
+        return yaml.safe_load("".join(data))
     else:
         return data
