@@ -2,7 +2,10 @@ import markdown
 import codecs
 
 def get_data(path, params):
-    extensions = ['extra', 'smarty']
+    extensions = [
+        'markdown.extensions.extra',
+        'markdown.extensions.smarty'
+    ]
     with codecs.open(path, mode="r", encoding="utf-8") as stream:
 #     with open(path, 'r') as stream:
         md = stream.read()

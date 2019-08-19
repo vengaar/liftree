@@ -49,8 +49,7 @@ class LifTreeConfig(LifTreeObject):
             for file in sorted(glob.glob(self.root_include_pattern)):
                 # print(file)
                 self._logger.info(f'include={file}')
-                with open(file, 'r') as stream:
-                    config_include = yaml.load(stream)
+                config_include = load_yaml_file(file, None)
                 self._import_config(config_include)
 #             self._write()
 
@@ -67,8 +66,7 @@ class LifTreeConfig(LifTreeObject):
         return LifTreeRenderer(name=name, **renderer_data)
 
     def _init_from_file(self, file):
-        with open(self.root_config_file, 'r') as stream:
-            config = yaml.load(stream)
+        config = load_yaml_file(self.root_config_file, None)
         self.renderers = config.get('renderers', dict())
         self.defaults = config.get('defaults', dict())
         self.folders = config.get('folders', [])
@@ -91,8 +89,7 @@ class LifTreeConfig(LifTreeObject):
         config_file = os.path.join(config_folder, 'liftree.conf')
         self.import_path.append(os.path.join(config_folder))
         self._logger.debug(config_file)
-        with open(config_file, 'r') as stream:
-            config = yaml.load(stream)
+        config = load_yaml_file(config_file, None)
         renderers = config.get('renderers', dict())
         self.renderers.update(renderers)
         folders = config.get('folders', [])
