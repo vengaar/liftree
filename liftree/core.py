@@ -133,15 +133,13 @@ class LifTree:
                         if re_pattern.match(path) is not None
                     ]
                     result_files.extend(selected_files)
-
                     fullpath_foders = [
                         os.path.join(root, folder)
                         for folder in dirs
                     ]
                     result_folders.extend(fullpath_foders)
-
             valids_files = dict()
-            for file in result_files:
+            for file in sorted(result_files):
                 folder = self._is_valid_path(file)
                 if folder is not None:
                     renderer = self._get_renderer(file)
