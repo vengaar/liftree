@@ -1,0 +1,152 @@
+{
+  "$id": "https://liftree.com/liftree-schemas/config.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Schema for liftree configuration file liftree.conf",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["folders"],
+  "properties": {
+    "defaults": {
+      "description": "A dictionary with default to override.",
+      "type": "object",
+      "$ref": "#/definitions/defaults"
+    },
+    "folders": {
+      "description": "The folders that liftree is authorized to managed.",
+      "type": "array",
+      "items": {"$ref": "#/definitions/folder"}
+    },
+    "mappings": {
+      "description": "A list of mapping used to associate a file with a renderer.",
+      "type": "array",
+      "items": {"$ref": "#/definitions/mapping"}
+    },
+    "renderers": {
+      "description": "The method to extract data from file and the jinja2 template to used.",
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "type": "object",
+          "$ref": "#/definitions/renderer"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "defaults": {
+      "type": "object",
+      "properties": {
+        "path: ": {
+          "type": "string",
+          "description": "~/liftree/tests/README.md."
+        }
+      }
+    },
+
+    "folder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "path"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "TODO."
+        },
+        "path": {
+          "type": "string",
+          "description": "TODO."
+        },
+        "excludes": {
+          "type": "array",
+          "description": "TODO.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "extra": {
+          "type": "object",
+          "$ref": "#/definitions/extra"
+        }
+      }
+    },
+
+    "extra": {
+      "description": "TODO.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "loaders": {
+          "patternProperties": {
+            "^.*$": {
+              "type": "object",
+              "$ref": "#/definitions/loader"
+            }
+          }
+        },
+        "files": {
+          "description": "TODO.",
+          "type": "object"
+        }
+      }
+    },
+
+    "loader": {
+      "description": "TODO.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "TODO."
+        },
+        "params": {
+          "type": "object",
+          "description": "TODO."
+        }
+      }
+    },
+
+    "mapping": {
+      "description": "TODO.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "renderer"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "TODO."
+        },
+        "renderer": {
+          "type": "string",
+          "description": "TODO."
+        },
+        "search": {
+          "type": "boolean",
+          "description": "TODO."
+        }
+      }
+    },
+
+    "renderer": {
+      "description": "TODO.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["template"],
+      "properties": {
+        "loader": {
+          "type": "string",
+          "description": "TODO."
+        },
+        "template": {
+          "type": "string",
+          "description": "TODO."
+        },
+        "extra": {
+          "type": "object",
+          "$ref": "#/definitions/extra"
+        }
+      }
+    }
+  }
+}
