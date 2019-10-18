@@ -14,14 +14,17 @@
         - httpd_enable_homedirs
         - httpd_read_user_content
 
-    - name: Create empty log file
+    - name: Create empty files
       file:
-        path: "{{ liftree_logfile }}"
+        path: "{{ item }}"
         state: touch
         owner: "{{ wsgi_user }}"
         group: "{{ wsgi_user }}"
+      loop:
+        - "{{ liftree_generated_config }}"
+        - "{{ liftree_logfile }}"
 
-    - name: Set context for log file
+    - name: Set context for files
       sefcontext:
         target: "{{ item }}"
         setype: httpd_sys_rw_content_t
@@ -30,11 +33,16 @@
         - "{{ liftree_generated_config }}"
         - "{{ liftree_logfile }}"
 
-    - name: Apply new SELinux file context to log file
+    - name: Apply new SELinux file context
       command: restorecon -v {{ item }}
       loop:
         - "{{ liftree_generated_config }}"
         - "{{ liftree_logfile }}"
+
+    - name: Remove genereted config
+      file:
+        path: "{{ liftree_generated_config }}"
+        state: absent
 
     - name: Allow Apache to listen on tcp port {{ wsgi_port }}
       seport:
