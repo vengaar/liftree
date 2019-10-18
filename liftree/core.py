@@ -6,11 +6,12 @@ import importlib
 import inspect
 import sys
 import os
-import grp
 import stat
 import glob
-from typing import Dict  # , Tuple, Sequence
+from typing import Dict
 import pathlib
+import jsonschema
+import json
 
 # liftree import
 from .constants import *
@@ -25,6 +26,7 @@ class LifTreeConfig(LifTreeObject):
     generated_config_file = os.path.join(str(pathlib.Path.home()), 'generated_liftree.conf')
     root_include_dir = os.path.join(root_config_dir, 'conf.d')
     root_include_pattern = os.path.join(root_include_dir, '*.conf')
+    _schema = None
 
     def __init__(self):
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -42,16 +44,13 @@ class LifTreeConfig(LifTreeObject):
         self._logger.debug(f'generate_config={generate_config}')
         self._logger.debug(f'generated_config_exist={generated_config_exist}')
         self._logger.debug(f'generate={generate}')
-        # liftree path for core loaders and filers
-        self.import_path = [os.path.dirname(os.path.realpath(__file__))]
         if generate:
             self._init_from_file(self.root_config_file)
             for file in sorted(glob.glob(self.root_include_pattern)):
-                # print(file)
                 self._logger.info(f'include={file}')
                 config_include = load_yaml_file(file, None)
                 self._import_config(config_include)
-#             self._write()
+            self._write()
 
         for lib_path in self.import_path:
             if lib_path not in sys.path:
@@ -66,22 +65,24 @@ class LifTreeConfig(LifTreeObject):
         return LifTreeRenderer(name=name, **renderer_data)
 
     def _init_from_file(self, file):
-        config = load_yaml_file(self.root_config_file, None)
+        self._logger.debug(f'init config from {file}')
+        config = load_yaml_file(file, None)
         self.renderers = config.get('renderers', dict())
         self.defaults = config.get('defaults', dict())
         self.folders = config.get('folders', [])
         self.templates = config.get('templates', [])
-        self.mappings = config.get('mapping', [])
+        self.mappings = config.get('mappings', [])
+        # liftree path for core loaders and filers
+        import_path_core = os.path.dirname(os.path.realpath(__file__))
+        self.import_path = config.get('import_path', [import_path_core])
 
     def _write(self):
-        with open(self.generated_config_file, 'w') as outfile:
+        with open(self.generated_config_file, 'w') as fp:
             yaml.dump(
                 self._get_data(),
-                outfile,
+                fp,
                 default_flow_style=False
             )
-        os.chmod(self.generated_config_file, 0o666)
-        os.chown(self.generated_config_file, -1, grp.getgrnam("users").gr_gid)
 
     def _import_config(self, config_include):
         self._logger.debug(config_include)
@@ -90,6 +91,7 @@ class LifTreeConfig(LifTreeObject):
         self.import_path.append(os.path.join(config_folder))
         self._logger.debug(config_file)
         config = load_yaml_file(config_file, None)
+        self._validate(config)
         renderers = config.get('renderers', dict())
         self.renderers.update(renderers)
         folders = config.get('folders', [])
@@ -100,6 +102,36 @@ class LifTreeConfig(LifTreeObject):
         self.templates.insert(0, templates)
         default = config.get('defaults', dict())
         self.defaults.update(default)
+
+    @property
+    def schema_file(self):
+        """
+        """
+        dir_current = os.path.dirname(__file__)
+        dir_parent = os.path.dirname(dir_current)
+        schema_file = os.path.join(dir_parent, 'schemas', 'config.json') 
+        self._logger.debug(schema_file)
+        return schema_file
+
+    @property
+    def schema(self):
+        """
+        """
+        if self._schema is None:
+            self._logger.debug('Get jsonschema')
+            with open(self.schema_file) as fp:
+                self._schema = json.load(fp)
+        return self._schema
+
+    def _validate(self, config):
+        """
+        """
+        if self.defaults.get('config_check'):
+            self._logger.debug("Use jsonschema to validate config")
+            jsonschema.validate(
+                instance=config,
+                schema=self.schema,
+            )
 
 
 class LifTree:
@@ -190,6 +222,7 @@ class LifTree:
     def _extend_j2(self, j2_env):
         extends = {'filters': [], 'tests': []}
         import_dirs = self.liftree_config.import_path
+        self.logger.debug(f"Get filters/tests from {import_dirs}")
         self.logger.debug(import_dirs)
         for import_dir in import_dirs:
             folder_path = os.path.join(import_dir, 'plugins')
@@ -201,10 +234,10 @@ class LifTree:
                         module_extend = importlib.import_module(f'plugins.{module_name}')
                         for tuple_function in inspect.getmembers(module_extend, predicate=inspect.isfunction):
                             (name, function) = tuple_function
-
                             if name.startswith('filter_'):
                                 filter = name[len('filter_'):]
                                 extends['filters'].append(filter)
+                                self.logger.debug(f"Add filter {filter}")
                                 j2_env.filters[filter] = function
                             if name.startswith('test_'):
                                 test = name[len('test_'):]
