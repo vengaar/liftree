@@ -15,6 +15,7 @@
           - policycoreutils-python
           - python3-PyYAML
           - python3-jmespath
+          - python3-jsonschema
         state: latest
 
     - name: (fedora) Deploy apache configuration

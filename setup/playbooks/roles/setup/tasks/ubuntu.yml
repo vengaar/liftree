@@ -27,6 +27,7 @@
           - python3-markdown
           - python3-bs4
           - python3-jmespath
+          - python3-jsonschema
         state: latest
 
     - name: Deploy apache configuration
