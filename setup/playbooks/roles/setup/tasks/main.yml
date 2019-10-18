@@ -1,14 +1,19 @@
 ---
-- debug: var=wsgi_user
-- debug: var=git_clone
-- debug: var=git_version
-- debug: var=os_version
-- debug: var=required.os
+- name: Summarize installation
+  debug:
+    msg: |
+      Current OS: {{ ansible_distribution }}/{{ ansible_distribution_major_version }}
+      Expected OS:
+        {{ required.os }}
+      User: {{ wsgi_user }}
+      Github:
+        Clone: {{ git_clone }}
+        Version: {{ git_version }}
 
 - name: Ensure pre-requiste
   assert:
     that:
-      - os_version in required.os
+      - ansible_distribution_major_version|int >= required.os[ansible_distribution]
 
 - name: Deploy from git
   when: git_clone|bool
