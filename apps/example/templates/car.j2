@@ -1,0 +1,32 @@
+{% extends "layout.j2" %}
+{% block body %}
+
+{% if meta.schema.valid %}
+
+  <div class="ui green segment">
+    <div class="header">
+      <i class="green check icon"></i>
+      Data match schema <code>{{ meta.schema.schema }}</code>
+    </div>
+  </div>
+
+{% else %}
+
+  <div class="ui red segment">
+    <div class="header">
+      <i class="red times icon"></i>
+      Data doesn't match schema {{ meta.schema.schema }}
+    </div>
+  </div>
+  <div class="ui inverted red segment">
+    <pre><code>{{ meta.schema.error|to_yaml }}</code></pre>
+  </div>
+
+{% endif %}
+
+  <div class="ui segment">
+    <pre><code>{{ data|to_yaml }}</code></pre>
+  </div>
+</div>
+
+{% endblock %}

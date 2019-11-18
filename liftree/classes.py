@@ -67,5 +67,6 @@ class LifTreeRenderer(LifTreeExtra):
         else:
             self.loader = None
         self.template = kwargs.get('template')
+        self.schema = kwargs.get('schema')
         self.content_type = kwargs.get('content_type', liftree.CONTENT_TYPE_HTML)
 

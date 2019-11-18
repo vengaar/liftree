@@ -142,6 +142,10 @@
           "type": "string",
           "description": "TODO."
         },
+        "schema": {
+          "type": "string",
+          "description": "TODO."
+        },
         "extra": {
           "type": "object",
           "$ref": "#/definitions/extra"

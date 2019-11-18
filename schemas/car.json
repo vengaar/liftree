@@ -1,0 +1,23 @@
+{
+  "$id": "https://liftree.com/liftree-schemas/car.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Test schema for example",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["brand", "model"],
+  "properties": {
+    "brand": {
+      "description": "The brand's car.",
+      "type": "string",
+      "enum": ["mercedes", "porsche", "ferrari"]
+    },
+    "model": {
+      "type": "string"
+    },
+    "passenger": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 5
+    }
+  }
+}

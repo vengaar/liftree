@@ -13,6 +13,8 @@ from liftree.utils import format_search_results_for_sui
 
 class TestRender(unittest.TestCase):
 
+    test_file_jsonschema_valid = f'{liftree_tests.LIFTREE_PATH_TEST}/data/car_valid.yaml'
+    test_file_jsonschema_invalid = f'{liftree_tests.LIFTREE_PATH_TEST}/data/car_invalid.yaml'
     test_file_json = f'{liftree_tests.LIFTREE_PATH_TEST}/data/test.json'
     # Not existing file => unavailable
     test_file_none = '/tmp/flgkgkiejjk/158468764'
@@ -23,7 +25,7 @@ class TestRender(unittest.TestCase):
     # Marked as forbidden in mapping  => unavailable
     test_file_forbidden = f'{liftree_tests.LIFTREE_PATH_TEST}/data/test.secret'
 
-    def test_is_valid(self):
+    def _test_is_valid(self):
         # Valid file
         _liftree = LifTree()
         folder = _liftree._is_valid_path(self.test_file_json)
@@ -40,7 +42,7 @@ class TestRender(unittest.TestCase):
             folder = _liftree._is_valid_path(path)
             self.assertIsNone(folder)
 
-    def test_get_renderer(self):
+    def _test_get_renderer(self):
         _liftree = LifTree()
 
         # Json file
@@ -58,7 +60,7 @@ class TestRender(unittest.TestCase):
         renderer = _liftree._get_renderer(self.test_file_exclude)
         self.assertEqual(renderer.name, 'json')
 
-    def test_build_extra(self):
+    def _test_build_extra(self):
         _liftree = LifTree()
         folder = _liftree._is_valid_path(self.test_file_json)
         renderer = _liftree._get_renderer(self.test_file_json)
@@ -75,7 +77,22 @@ class TestRender(unittest.TestCase):
         self.assertIsInstance(extra_sources['loaders'], dict)
         self.assertIsInstance(extra_sources['files'], dict)
 
-    def test_extra(self):
+    def test_jsonschema(self):
+        _liftree = LifTree()
+        test_file = self.test_file_jsonschema_valid
+        renderer = _liftree._get_renderer(test_file)
+        data = renderer.loader.get_data(test_file)
+        schema_validation = _liftree._get_schema_data(renderer, data)
+        self.assertTrue(schema_validation['valid'])
+        self.assertNotIn('error', schema_validation)
+        test_file = self.test_file_jsonschema_invalid
+        renderer = _liftree._get_renderer(test_file)
+        data = renderer.loader.get_data(test_file)
+        schema_validation = _liftree._get_schema_data(renderer, data)
+        self.assertFalse(schema_validation['valid'])
+        self.assertEqual(schema_validation['error'], "'renault' is not one of ['mercedes', 'porsche', 'ferrari']")
+
+    def _test_extra(self):
         _liftree = LifTree()
         test_file = self.test_file_json
         folder = _liftree._is_valid_path(test_file)
@@ -97,7 +114,7 @@ class TestRender(unittest.TestCase):
         self.assertEqual(extra['test_page'], 'I love Liftree [unittest]')
         self.assertEqual(extra['secret'], 'The secret file')
 
-    def test_render(self):
+    def _test_render(self):
         _liftree = LifTree()
         status, content_type, output = _liftree.render(self.test_file_json)
         self.assertEqual(status, liftree.HTTP_200)

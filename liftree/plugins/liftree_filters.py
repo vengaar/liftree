@@ -4,8 +4,25 @@ import os
 import markdown
 import datetime
 import jmespath
+import jsonschema
 
 UNKNOW = '?'
+
+def filter_jsonschema_validate(value, schema_url):
+    """
+    """
+    import requests
+    response = requests.get(schema_url)
+    schema = json.loads(response.content)
+    try:
+        jsonschema.validate(
+            instance=value,
+            schema=schema
+        )
+    except Exception as err:
+        return err
+    else:
+        return None
 
 def filter_file_stat(value):
     """

@@ -12,10 +12,12 @@ from typing import Dict
 import pathlib
 import jsonschema
 import json
+import requests
 
 # liftree import
 from .constants import *
 from .loaders.file_yaml_loader import get_data as load_yaml_file
+from .loaders.file_json_loader import get_data as load_json_file
 from .classes import LifTreeObject, LifTreeFolder, LifTreeLoader, LifTreeRenderer
 
 
@@ -109,7 +111,7 @@ class LifTreeConfig(LifTreeObject):
         """
         dir_current = os.path.dirname(__file__)
         dir_parent = os.path.dirname(dir_current)
-        schema_file = os.path.join(dir_parent, 'schemas', 'config.json') 
+        schema_file = os.path.join(dir_parent, 'schemas', 'config.json')
         self._logger.debug(schema_file)
         return schema_file
 
@@ -203,9 +205,11 @@ class LifTree:
         plugins = self._extend_j2(j2_env)
         template = j2_env.get_template(renderer.template)
         stat = os.stat(path) if os.path.isfile(path) else None
+
         meta = dict(
             path=path,
             stat=stat,
+            schema=self._get_schema_data(renderer, data),
             folder=folder._get_data() if folder is not None else None,
             renderer=renderer._get_data(),
             config=self.liftree_config._get_data(),
@@ -218,6 +222,31 @@ class LifTree:
         status = HTTP_200
         content_type = CONTENT_TYPE_HTML
         return(status, content_type, output.encode('utf-8'))
+
+    def _get_schema_data(self, renderer: LifTreeRenderer, data):
+        schema_data = None
+        if renderer.schema is not None:
+            schema_data = {
+                'schema': renderer.schema
+            }
+            if os.path.isfile(renderer.schema):
+                schema=load_json_file(renderer.schema, None)
+            else:
+                response = requests.get(renderer.schema)
+                schema = json.loads(response.content)
+            try:
+                jsonschema.validate(
+                    instance=data,
+                    schema=schema,
+                    # resolver = resolver,
+                    # format_checker=jsonschema.draft7_format_checker
+                )
+            except jsonschema.exceptions.ValidationError as err:
+                schema_data['valid'] = False
+                schema_data['error'] = err.message
+            else:
+                schema_data['valid'] = True
+        return schema_data
 
     def _extend_j2(self, j2_env):
         extends = {'filters': [], 'tests': []}

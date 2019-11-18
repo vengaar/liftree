@@ -22,7 +22,16 @@
         Show test files
         <i class="dropdown icon"></i>
         <div class="menu">
-{% for file in ['test.json', 'test.md', 'test.secret', 'test.text', 'test.yaml', 'test.plugins'] %}
+{% for file in [
+    'test.json',
+    'test.md',
+    'test.secret',
+    'test.text',
+    'test.yaml',
+    'test.plugins',
+    'car_valid.yaml',
+    'car_invalid.yaml',
+] %}
           {% set path = '~/liftree/tests/data/' + file %}
           {{ path|liftree_link(class_name='item') }}
 {% endfor %}
