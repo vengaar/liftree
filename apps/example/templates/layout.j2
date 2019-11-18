@@ -1,23 +1,20 @@
-{% set version_fomantic_ui = '2.7.7' %}
-{% set version_highlightjs = '9.15.8' %}
+{% set version_fomantic_ui = '2.8.2' %}
+{% set version_highlightjs = '9.15.10' %}
 <!doctype html>
 <html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- http://fatopng.com/fontawesome-to-base64 -->
+    <link rel="icon" href="data:;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAADfUlEQVRYhe3YT2gdVRTH8c8UCaWUEIokQxEpbSkuxIUUEVEp/gFnJ1oFK/6tguBmai1SgoiISFF0IAsVpUoV3LgoCh3BIloEFVRKLaVgyUK6mIiEUEopIWRc3Hlx8ue9TNJJUyE/GN59c+/c++Xcc885M1Gp9H/QutUGaKo10La1Btq2rlttgI6SbGgT0X7KG4k+ydPiu3p/dC2EpySLd2EEN1e3zuPxPC1OdMas+tYnWbwT7/sPEm7AY/VxrVs0yeJ1WC+41dxrPTZiE7bgEdxd3Z+rCQzlaTFJCz6aZPF67MItlNuIBrABfV1AN+B69Ou9owPYgdPLBk2yeEMA8xQewmDoiZYzXS/dZrmgSRZvxut4QPClFVS5rdNqDFpt8bMYxuYVoFpIM4ZoBJpk8UakeEU4DFdJ0QzfoqBJFvdTfkS029UPZxc7jZ4LV9u9f5Ug4Z9OYzGL7sFLlgZ5QTipZ/FT9TsqxMVp7MZnDef6Y1HQJIv7cEBzn5ykPEL0NX5HkafF1ALzHms4H5xZFBRP46YGk43jc4zk6di5GlBfksVbheA+YCYrlQ83jLfn87Q41RO0OuVJg8nOCDH1aCfVVX69B/cKmWWwBtq3hKTwff1PN4tuN7tImKvL+AbP5GkxUQFuxnN43pUngnHKWX7cDXRQ2LJuOow3apB34FXc12POpegU0ckmoP3VNVcX8UGeFgcqwI3CNo8IRUgbmhKM8HcD0BLRQiHpY7xZ+z+MF7QHCcdwYu7Nbha9XF31OvHLPC32QZINDRAN4+UWAeFH7FsorHUJ5NG4Wlao9G2t/ZpgyTY1jgN5Wowu1NnNoqeEoF0/vQeTLIb7q5Tapk7jxTwtfu42oBvoOvOtvQUftsM1S+ewF7/2GjQPNMniGO8JhfFK6hI+xVt5WpxfbPAs0CSLt1MeInrQylZLo3gbR/K0uNTkgZm30CSLB/GD2fl9CscFH7oTOy0/oE8Lvv8V5aE8HWsE2FF90SfNL0JOU+4nOiscrEeFFLljiZAn8QWOYjRPx+aFn6WADs3pm8TBPB3rlFp/4Z0ki9/FPZR3Ed0qvKP3V3NNC/F3grIg+gXH87Q44wpV3/qt+E2odKaF0m3vQsG3o+q1eaAC7cMU5WQAjSZ6Pbts0Grh2/EE/sThPC0utLXQleqa+EjWRKv+kayp1kDb1hpo2/oXH/HvpeoF/58AAAAASUVORK5CYII=">
     <title>Liftree demo</title>
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/fomantic-ui@{{ version_fomantic_ui }}/dist/semantic.min.css"/>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/{{ version_highlightjs }}/styles/default.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.10.0/github-markdown.min.css">
-    <style>
-      .main.container {
-        margin-top: 6em;
-        margin-bottom: 3em;
-      }
-    </style>
+    <style>{% include '/liftree/layout.css' %}</style>
   </head>
   <body>
-    <div class="ui fixed inverted main menu">
+    <div id="menu" class="ui fixed inverted main menu">
       <a class="item" href="https://github.com/vengaar/liftree">
         <i class="github icon"></i>liftree
       </a>
@@ -37,7 +34,7 @@
             <input class="prompt" type="text" placeholder="Search ...">
             <i class="search link icon"></i>
           </div>
-          <div class="results"></div>
+          <div id="liftree_search_result" class="results"></div>
         </div>
       </div>
     </div>
@@ -51,15 +48,6 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/{{ version_highlightjs }}/highlight.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script>
-      'use strict'
-      $('.ui.dropdown').dropdown();
-      $('.ui.search').search({
-        type: 'category',
-        apiSettings: {
-          url: '/search?query={query}&format=sui'
-        },
-      });
-    </script>
+    <script>{% include '/liftree/layout.js' %}</script>
   </body>
 </html>
