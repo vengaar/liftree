@@ -12,14 +12,18 @@
 
 {% else %}
 
-  <div class="ui red segment">
+  <div class="ui red attached segment">
     <div class="header">
       <i class="red times icon"></i>
       Data doesn't match schema {{ meta.schema.schema }}
     </div>
   </div>
-  <div class="ui inverted red segment">
-    <pre><code>{{ meta.schema.error|to_yaml }}</code></pre>
+  <div class="ui bottom attached negative icon message">
+    <i class="exclamation circle icon"></i>
+    <div class="content">
+      <div class="header">Schema validation errors</div>
+      <pre><code>{{ meta.schema.error }}</code></pre>
+    </div>
   </div>
 
 {% endif %}
