@@ -28,6 +28,7 @@
           - python3-bs4
           - python3-jmespath
           - python3-jsonschema
+          - python3-requests
         state: latest
 
     - name: Deploy apache configuration
