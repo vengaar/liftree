@@ -1,5 +1,5 @@
 import traceback
-from cgi import parse_qs
+from urllib.parse import parse_qs
 import json
 from logging.config import fileConfig
 

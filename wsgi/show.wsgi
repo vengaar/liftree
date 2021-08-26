@@ -1,6 +1,6 @@
 import traceback
 import os
-from cgi import parse_qs
+from urllib.parse import parse_qs
 from logging.config import fileConfig
 
 # liftree import
